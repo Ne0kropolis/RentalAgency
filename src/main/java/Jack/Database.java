@@ -48,8 +48,8 @@ public class Database {
             stmnt.executeUpdate("CREATE TABLE VEHICLE (vehNumber NUMBER(4), make VARCHAR(40), category VARCHAR(10), " +
                     "rentalPrice FLOAT(6), availableForRent CHAR(1))");
 
-            stmnt.executeUpdate("CREATE TABLE RENTAL (rentalNumber NUMBER(4), dateRental VARCHAR(10), " +
-                    "dateReturned VARCHAR(10), pricePerDay FLOAT(6), totalRental FLOAT(8), custNumber NUMBER(3), " +
+            stmnt.executeUpdate("CREATE TABLE RENTAL (rentalNumber NUMBER(4), dateRental DATE, " +
+                    "dateReturned DATE, pricePerDay FLOAT(6), totalRental FLOAT(8), custNumber NUMBER(3), " +
                     "vehNumber NUMBER(4))");
         }
         catch (SQLException e) {

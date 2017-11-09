@@ -20,6 +20,7 @@ public class Driver {
             fileReader.passDatabaseReference(database);
             fileReader.readCustomerFile();
             fileReader.readVehicleFile();
+            fileReader.readRentalFile();
         }
     }
 

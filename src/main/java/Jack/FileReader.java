@@ -69,7 +69,43 @@ public class FileReader {
                     database.executeUpdate("INSERT INTO VEHICLE VALUES ('" + String.valueOf(vehicle.getVehNumber()) + "', '" +
                         vehicle.getMake() + "', '" + vehicle.getCategory() + "', '" + String.valueOf(vehicle.getRentalPrice()) +
                         "', '" + available + "')");
+                }
+                catch (EOFException e) {
+                    input.close();
+                    e.printStackTrace();
+                }
+                catch (ClassNotFoundException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
+    public void readRentalFile() {
+
+        try {
+
+            ObjectInputStream input = new ObjectInputStream(new FileInputStream("rental.ser"));
+
+            while (true) {
+                try {
+
+                    Rental rental = (Rental) input.readObject();
+                    String dateRented = rental.getDateRented().replaceAll("/", "-");
+                    String dateReturned;
+                    if (rental.getDateReturned().equals("NA")) {
+                        dateReturned = "NULL, '";
+                    }
+                    else {
+                        dateReturned = "TO_DATE('" + rental.getDateReturned().replaceAll("/", "-") + "', 'yyyy-mm-dd'), '";
+                    }
+
+                    database.executeUpdate("INSERT INTO RENTAL (rentalNumber, dateRental, dateReturned, pricePerDay) VALUES ('" +
+                            String.valueOf(rental.getRentalNumber()) + "', " + "TO_DATE('" + dateRented + "', 'yyyy-mm-dd'), " +
+                            dateReturned + String.valueOf(rental.getPricePerDay()) + "')");
                 }
                 catch (EOFException e) {
                     input.close();
