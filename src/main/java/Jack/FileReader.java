@@ -1,13 +1,17 @@
 package Jack;
 
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
+import java.io.*;
 
 public class FileReader {
 
-    public void readFiles(Database in_database) {
+    private Database database;
+
+    public void passDatabaseReference(Database in_database) {
+        this.database = in_database;
+    }
+
+    public void readCustomerFile() {
 
         try {
 
@@ -26,8 +30,50 @@ public class FileReader {
                         canRent = "0";
                     }
 
-                    in_database.executeUpdate("INSERT INTO CUSTOMER VALUES ('" + String.valueOf(cust.getCustNumber()) +
+                    database.executeUpdate("INSERT INTO CUSTOMER VALUES ('" + String.valueOf(cust.getCustNumber()) +
                         "', '" + cust.getFirstName() + "', '" + cust.getSurName() + "', '" + canRent + "')");
+                }
+                catch (EOFException e) {
+                    input.close();
+                    e.printStackTrace();
+                }
+                catch (ClassNotFoundException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void readVehicleFile() {
+
+        try {
+
+            ObjectInputStream input = new ObjectInputStream(new FileInputStream("vehicle.ser"));
+
+            while (true) {
+                try {
+
+                    Vehicle vehicle = (Vehicle) input.readObject();
+                    String available;
+
+                    if(vehicle.isAvailableForRent()) {
+                        available = "1";
+                    }
+                    else {
+                        available = "0";
+                    }
+
+                    database.executeUpdate("INSERT INTO VEHICLE VALUES ('" + String.valueOf(vehicle.getVehNumber()) + "', '" +
+                        vehicle.getMake() + "', '" + vehicle.getCategory() + "', '" + String.valueOf(vehicle.getRentalPrice()) +
+                        "', '" + available + "')");
+
+                }
+                catch (EOFException e) {
+                    input.close();
+                    e.printStackTrace();
                 }
                 catch (ClassNotFoundException e) {
                     e.printStackTrace();

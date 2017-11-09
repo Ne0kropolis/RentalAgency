@@ -17,7 +17,9 @@ public class Driver {
 
         if (ans.equalsIgnoreCase("y")) {
             database.rebuild();
-            fileReader.readFiles(database);
+            fileReader.passDatabaseReference(database);
+            fileReader.readCustomerFile();
+            fileReader.readVehicleFile();
         }
     }
 

@@ -18,7 +18,7 @@ public class Database {
         }
 
         try {
-            con = DriverManager.getConnection("jdbc:oracle:thin:jack/Secular1@localhost:1521:xe");
+            con = DriverManager.getConnection("jdbc:oracle:thin:jack/pass@localhost:1521:xe");
             stmnt = con.createStatement();
         }
         catch (SQLException e) {
