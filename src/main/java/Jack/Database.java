@@ -1,6 +1,7 @@
 package Jack;
 
 import java.sql.*;
+import java.util.ArrayList;
 
 public class Database {
 
@@ -102,22 +103,78 @@ public class Database {
         }
     }
 
-    public void executeUpdate(String in_sql) {
+    public String executeUpdate(String in_sql) {
         try {
+
             stmnt.executeUpdate(in_sql);
+            return ("Update Successful");
         }
         catch (SQLException e) {
             e.printStackTrace();
         }
+        return null;
     }
 
-    public void executeQuery(String in_sql) {
+    public ArrayList<String> executeQuery(char in_table, String in_sql) {
         try {
-            stmnt.executeQuery(in_sql);
+
+            ArrayList<String> results = new ArrayList<String>();
+            ResultSet rs = stmnt.executeQuery(in_sql);
+
+            while (rs.next()) {
+
+                if (in_table == 'C') {
+
+                    int custNum = rs.getInt("custNumber");
+                    String fName = rs.getString("firstName");
+                    String lName = rs.getString("surName");
+                    String canRent;
+                    if (rs.getString("canRent").equals("1")) {
+                        canRent = "Yes";
+                    }
+                    else {
+                        canRent = "No";
+                    }
+
+                    results.add(String.valueOf(custNum) + ";" + fName + ";" + lName + ";" + canRent);
+                }
+                else if (in_table == 'V') {
+
+                    int vehNum = rs.getInt("vehNumber");
+                    String make = rs.getString("make");
+                    String cat = rs.getString("category");
+                    float price = rs.getFloat("rentalPrice");
+                    String available;
+                    if (rs.getString("availableForRent").equals("1")) {
+                        available = "Yes";
+                    }
+                    else {
+                        available = "No";
+                    }
+
+                    results.add(String.valueOf(vehNum) + ";" + make + ";" + cat + ";" + String.valueOf(price) + ";" + available);
+                }
+                else if (in_table == 'R') {
+
+                    int rentNum = rs.getInt("rentalNumber");
+                    java.sql.Date rentDate = rs.getDate("dateRental");
+                    java.sql.Date returnDate = rs.getDate("dateReturned");
+                    float priceDay = rs.getFloat("pricePerDay");
+                    float totalRental = rs.getFloat("totalRental");
+                    int custNum = rs.getInt("custNumber");
+                    int vehNumber = rs.getInt("vehNumber");
+
+                    results.add(String.valueOf(rentNum) + ";" + rentDate.toString() + ";" + returnDate.toString() + ";" +
+                        String.valueOf(priceDay) + ";" + String.valueOf(totalRental) + ";" + String.valueOf(custNum) + ";" +
+                        String.valueOf(vehNumber));
+                }
+            }
+            return results;
         }
         catch (SQLException e) {
             e.printStackTrace();
         }
+        return null;
     }
 }
 
