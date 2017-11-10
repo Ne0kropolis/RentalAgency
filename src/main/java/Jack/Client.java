@@ -42,7 +42,7 @@ public class Client {
                     request = in_text;
                 }
                 else {
-                    request = "QCSELECT * FROM CUSTOMER";
+                    request = "QRSELECT * FROM RENTAL";
                     //request = "UINSERT INTO CUSTOMER VALUES (cust_id_seq.NEXTVAL, 'Jack', 'Forde', 1)";
                 }
 

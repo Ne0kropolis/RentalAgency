@@ -164,7 +164,7 @@ public class Database {
                     int custNum = rs.getInt("custNumber");
                     int vehNumber = rs.getInt("vehNumber");
 
-                    results.add(String.valueOf(rentNum) + ";" + rentDate.toString() + ";" + returnDate.toString() + ";" +
+                    results.add(String.valueOf(rentNum) + ";" + rentDate + ";" + returnDate + ";" +
                         String.valueOf(priceDay) + ";" + String.valueOf(totalRental) + ";" + String.valueOf(custNum) + ";" +
                         String.valueOf(vehNumber));
                 }
