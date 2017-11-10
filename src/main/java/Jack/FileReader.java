@@ -16,6 +16,7 @@ public class FileReader {
         try {
 
             ObjectInputStream input = new ObjectInputStream(new FileInputStream("customer.ser"));
+            int numRows = 0;
 
             while (true) {
                 try {
@@ -30,10 +31,12 @@ public class FileReader {
                         canRent = "0";
                     }
 
-                    database.executeUpdate("INSERT INTO CUSTOMER VALUES ('" + String.valueOf(cust.getCustNumber()) +
-                        "', '" + cust.getFirstName() + "', '" + cust.getSurName() + "', '" + canRent + "')");
+                    database.executeUpdate("INSERT INTO CUSTOMER VALUES (cust_id_seq.NEXTVAL, '" +
+                            cust.getFirstName() + "', '" + cust.getSurName() + "', '" + canRent + "')");
+                    numRows++;
                 }
                 catch (EOFException e) {
+                    System.out.println("Number of rows inserted into table CUSTOMER: " + numRows);
                     input.close();
                     e.printStackTrace();
                 }
@@ -52,6 +55,7 @@ public class FileReader {
         try {
 
             ObjectInputStream input = new ObjectInputStream(new FileInputStream("vehicle.ser"));
+            int numRows = 0;
 
             while (true) {
                 try {
@@ -66,11 +70,13 @@ public class FileReader {
                         available = "0";
                     }
 
-                    database.executeUpdate("INSERT INTO VEHICLE VALUES ('" + String.valueOf(vehicle.getVehNumber()) + "', '" +
+                    database.executeUpdate("INSERT INTO VEHICLE VALUES (veh_id_seq.NEXTVAL, '" +
                         vehicle.getMake() + "', '" + vehicle.getCategory() + "', '" + String.valueOf(vehicle.getRentalPrice()) +
                         "', '" + available + "')");
+                    numRows++;
                 }
                 catch (EOFException e) {
+                    System.out.println("Number of rows inserted into table VEHICLE: " + numRows);
                     input.close();
                     e.printStackTrace();
                 }
@@ -89,6 +95,7 @@ public class FileReader {
         try {
 
             ObjectInputStream input = new ObjectInputStream(new FileInputStream("rental.ser"));
+            int numRows = 0;
 
             while (true) {
                 try {
@@ -103,11 +110,15 @@ public class FileReader {
                         dateReturned = "TO_DATE('" + rental.getDateReturned().replaceAll("/", "-") + "', 'yyyy-mm-dd'), '";
                     }
 
-                    database.executeUpdate("INSERT INTO RENTAL (rentalNumber, dateRental, dateReturned, pricePerDay) VALUES ('" +
-                            String.valueOf(rental.getRentalNumber()) + "', " + "TO_DATE('" + dateRented + "', 'yyyy-mm-dd'), " +
-                            dateReturned + String.valueOf(rental.getPricePerDay()) + "')");
+                    database.executeUpdate("INSERT INTO RENTAL (rentalNumber, dateRental, dateReturned, pricePerDay, " +
+                            "custNumber, vehNumber) VALUES (rental_id_seq.NEXTVAL, " +
+                            "TO_DATE('" + dateRented + "', 'yyyy-mm-dd'), " + dateReturned +
+                            String.valueOf(rental.getPricePerDay()) + "', '" + String.valueOf(rental.getCustNumber())
+                            + "', '" + String.valueOf(rental.getVehNumber()) + "')");
+                    numRows++;
                 }
                 catch (EOFException e) {
+                    System.out.println("Number of rows inserted into table RENTAL: " + numRows);
                     input.close();
                     e.printStackTrace();
                 }

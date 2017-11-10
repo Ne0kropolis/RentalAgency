@@ -23,7 +23,7 @@ public class Rental  implements Serializable
         this.pricePerDay = pricePerDay;
         this.custNumber = custNumber;
         this.vehNumber = vehNumber;
-        determineTotalRental();
+        //determineTotalRental();
     }
 
      public Rental (int  rentalNumber, String dateRented, String dateReturned, double pricePerDay, double totalRental,
@@ -69,15 +69,24 @@ public class Rental  implements Serializable
         this.dateReturned = ret;
         determineTotalRental();
     }
-    public void setCustNumber(int cn)
+     public void setCustNumber(int cn)
     {
         this.custNumber = cn;        
     }
-    public void setVehNumber(int vn)
+     public void setVehNumber(int vn)
     {
         this.vehNumber = vn;        
     }
-    public void determineTotalRental()
+
+     public int getCustNumber() {
+         return  this.custNumber;
+     }
+
+     public int getVehNumber() {
+         return this.vehNumber;
+     }
+
+     public void determineTotalRental()
     {
         totalRental = dateDifference(dateRented, dateReturned) * pricePerDay;
         
