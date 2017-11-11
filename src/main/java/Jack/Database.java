@@ -12,7 +12,7 @@ public class Database {
     public void init() {
 
         try {
-            Class.forName("oracle.jdbc.OracleDriver") ;
+            Class.forName("oracle.jdbc.OracleDriver");
         }
         catch (ClassNotFoundException e) {
             e.printStackTrace();
@@ -107,6 +107,20 @@ public class Database {
         try {
 
             stmnt.executeUpdate(in_sql);
+            return ("Update Successful");
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public String executeUpdate(String in_sql1, String in_sql2, String in_sql3) {
+        try {
+
+            stmnt.executeUpdate(in_sql1);
+            stmnt.executeUpdate(in_sql2);
+            stmnt.executeUpdate(in_sql3);
             return ("Update Successful");
         }
         catch (SQLException e) {

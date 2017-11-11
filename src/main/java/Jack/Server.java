@@ -65,7 +65,7 @@ public class Server {
             try {
                 String request = (String) in.readObject();
 
-                if (request.equalsIgnoreCase("NO")) {
+                if (request.equalsIgnoreCase("CLOSE")) {
                     out.writeObject(request);
                     out.flush();
                     System.out.println("SERVER WILL NOW CLOSE...");
@@ -78,16 +78,23 @@ public class Server {
                 else {
 
                     char type = request.charAt(0);
+                    char table = request.charAt(1);
+                    String sql = request.substring(2);
 
                     if (type == 'Q') {
-                        char table = request.charAt(1);
-                        String sql = request.substring(2);
                         ArrayList<String> results = (ArrayList<String>) database.executeQuery(table, sql);
                         out.writeObject(results);
                         out.flush();
-                    } else {
-                        String sql = request.substring(1);
-                        String result = database.executeUpdate(sql);
+                    }
+                    else if (type == 'U') {
+                        String result;
+                        if (table == 'R') {
+                            String parts[] = sql.split("#");
+                            result = database.executeUpdate(parts[0], parts[1], parts[2]);
+                        }
+                        else {
+                            result = database.executeUpdate(sql);
+                        }
                         out.writeObject(result);
                         out.flush();
                     }

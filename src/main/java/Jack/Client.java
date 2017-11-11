@@ -16,7 +16,7 @@ public class Client {
             socket = new Socket("localhost", 3434);
             String text = "";
             Scanner scan = new Scanner(System.in);
-            while (!text.equalsIgnoreCase("NO")) {
+            while (!text.equalsIgnoreCase("CLOSE")) {
                 System.out.println("SEND REQUEST?");
                 text = scan.next();
                 communicate(text);
@@ -38,12 +38,16 @@ public class Client {
 
             try {
 
-                if (in_text.equalsIgnoreCase("NO")) {
+                if (in_text.equalsIgnoreCase("CLOSE")) {
                     request = in_text;
                 }
                 else {
-                    request = "QRSELECT * FROM RENTAL";
-                    //request = "UINSERT INTO CUSTOMER VALUES (cust_id_seq.NEXTVAL, 'Jack', 'Forde', 1)";
+                    //request = "QRSELECT * FROM RENTAL";
+                    request = "URINSERT INTO RENTAL (rentalNumber, dateRental, pricePerDay, custNumber, vehNumber) " +
+                            "VALUES (rental_id_seq.NEXTVAL, TO_DATE('2017-11-11', 'yyyy-mm-dd'), 450, '200', '1006')" +
+                            "#UPDATE CUSTOMER SET canRent = '0' WHERE custNumber = '200'#UPDATE VEHICLE SET availableForRent = '0' " +
+                            "WHERE vehNumber = '1006'";
+                    //request = "UCINSERT INTO CUSTOMER VALUES (cust_id_seq.NEXTVAL, 'Jack', 'Forde', '1')";
                 }
 
                 out.writeObject(request);
@@ -57,7 +61,7 @@ public class Client {
                 else {
                     String result = (String) in.readObject();
                     System.out.println(result);
-                    if (result.equalsIgnoreCase("NO")) {
+                    if (result.equalsIgnoreCase("CLOSE")) {
                         System.out.println("CLOSING CONNECTION...");
                         out.close();
                         in.close();
