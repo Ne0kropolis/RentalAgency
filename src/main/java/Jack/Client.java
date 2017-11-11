@@ -38,15 +38,15 @@ public class Client {
 
             try {
 
-                if (in_text.equalsIgnoreCase("CLOSE")) {
+                if (in_text.equalsIgnoreCase("CLOSE") || in_text.equalsIgnoreCase("REBUILD")) {
                     request = in_text;
                 }
                 else {
-                    //request = "QRSELECT * FROM RENTAL";
-                    request = "URINSERT INTO RENTAL (rentalNumber, dateRental, pricePerDay, custNumber, vehNumber) " +
+                    request = "QRSELECT * FROM RENTAL";
+                    /**request = "URINSERT INTO RENTAL (rentalNumber, dateRental, pricePerDay, custNumber, vehNumber) " +
                             "VALUES (rental_id_seq.NEXTVAL, TO_DATE('2017-11-11', 'yyyy-mm-dd'), 450, '200', '1006')" +
                             "#UPDATE CUSTOMER SET canRent = '0' WHERE custNumber = '200'#UPDATE VEHICLE SET availableForRent = '0' " +
-                            "WHERE vehNumber = '1006'";
+                            "WHERE vehNumber = '1006'";**/
                     //request = "UCINSERT INTO CUSTOMER VALUES (cust_id_seq.NEXTVAL, 'Jack', 'Forde', '1')";
                 }
 

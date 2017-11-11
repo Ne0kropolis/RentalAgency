@@ -6,7 +6,6 @@ import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.Scanner;
 
 public class Server {
 
@@ -18,29 +17,26 @@ public class Server {
 
     private void init() {
 
-        FileReader fileReader = new FileReader();
         database.init();
-
-        Scanner scan = new Scanner(System.in);
-        System.out.println("Type 'y' if you would like to reload the database, this will return the database to its original state: ");
-        String ans = scan.next();
-
-        if (ans.equalsIgnoreCase("y")) {
-            database.rebuild();
-            fileReader.passDatabaseReference(database);
-            fileReader.readCustomerFile();
-            fileReader.readVehicleFile();
-            fileReader.readRentalFile();
-        }
 
         running = true;
         try {
             listener = new ServerSocket(3434);
+            System.out.println("SERVER STARTED");
             listen();
         }
         catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void rebuild() {
+        FileReader fileReader = new FileReader();
+        database.rebuild();
+        fileReader.passDatabaseReference(database);
+        fileReader.readCustomerFile();
+        fileReader.readVehicleFile();
+        fileReader.readRentalFile();
     }
 
     private void listen() {
@@ -74,6 +70,11 @@ public class Server {
                     in.close();
                     client.close();
                     listener.close();
+                }
+                else if (request.equalsIgnoreCase("REBUILD")) {
+                    rebuild();
+                    out.writeObject("DATABASE RELOADED");
+                    out.flush();
                 }
                 else {
 
