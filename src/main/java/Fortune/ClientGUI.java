@@ -1,82 +1,84 @@
 package Fortune;
 
 
+import java.awt.event.ActionListener;
 import javax.swing.JOptionPane;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.table.DefaultTableModel;
+
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
-
 public class ClientGUI extends javax.swing.JFrame {
-    
-    String cmd ="";
+
+    String cmd = "";
     int rentMaxDay = 31;
     int rentMaxYear = 2017;
     static Client cl = new Client();
-    
+    Calendar current = Calendar.getInstance(TimeZone.getTimeZone("SAST"));
+    boolean clearText = true;
+
     static ArrayList<Customer> c = new ArrayList<Customer>();
     static ArrayList<Vehicle> v = new ArrayList<Vehicle>();
     static ArrayList<Rental> r = new ArrayList<Rental>();
-    
+
     public static void populateLists() {
         c.clear();
         v.clear();
         r.clear();
-        
+
         cl.communicate("QCSELECT * FROM CUSTOMER");
-        
-        for (int i = 0; i<cl.getResultSet().size(); i++) {
+
+        for (int i = 0; i < cl.getResultSet().size(); i++) {
             String[] values = cl.getResultSet().get(i).split(";");
             boolean rent = false;
-            
+
             if (values[3].equals("Yes")) {
                 rent = true;
             }
-            c.add(new Customer(Integer.parseInt(values[0]), values[1], values[2],"", rent));
+            c.add(new Customer(Integer.parseInt(values[0]), values[1], values[2], "", rent));
         }
-        
+
         cl.communicate("QVSELECT * FROM VEHICLE");
-        
-        for (int i = 0; i<cl.getResultSet().size(); i++) {
+
+        for (int i = 0; i < cl.getResultSet().size(); i++) {
             String[] values = cl.getResultSet().get(i).split(";");
-            int category= 1;
+            int category = 1;
             if (values[2].equals("SUV")) {
                 category = 2;
             }
-            boolean rent =false;
-            
+            boolean rent = false;
+
             if (values[4].equals("Yes")) {
                 rent = true;
             }
-            
-            v.add(new Vehicle(Integer.parseInt(values[0]),values[1],category, rent));
+
+            v.add(new Vehicle(Integer.parseInt(values[0]), values[1], category, rent));
         }
-        
+
         cl.communicate("QRSELECT * FROM RENTAL");
-        
-        for (int i = 0; i<cl.getResultSet().size(); i++) {
+
+        for (int i = 0; i < cl.getResultSet().size(); i++) {
             String[] values = cl.getResultSet().get(i).split(";");
-            
+
             if (values[2].equals("null")) {
                 values[1] = values[1].replace("-", "/");
-                r.add(new Rental(Integer.parseInt(values[0]),values[1],Double.parseDouble(values[3]),Integer.parseInt(values[5]),Integer.parseInt(values[6])));
-            }
-            else {
+                r.add(new Rental(Integer.parseInt(values[0]), values[1], Double.parseDouble(values[3]), Integer.parseInt(values[5]), Integer.parseInt(values[6])));
+            } else {
                 values[1] = values[1].replace("-", "/");
                 values[2] = values[2].replace("-", "/");
-                
-                r.add(new Rental(Integer.parseInt(values[0]),values[1],values[2],Double.parseDouble(values[3]), Double.parseDouble(values[4]),Integer.parseInt(values[5]),Integer.parseInt(values[6])));
+
+                r.add(new Rental(Integer.parseInt(values[0]), values[1], values[2], Double.parseDouble(values[3]), Double.parseDouble(values[4]), Integer.parseInt(values[5]), Integer.parseInt(values[6])));
             }
-            
-            
+
         }
-        
+
     }
-    
+
     public ClientGUI() {
         initComponents();
     }
@@ -100,7 +102,7 @@ public class ClientGUI extends javax.swing.JFrame {
         jLabel3 = new javax.swing.JLabel();
         allowRBtn = new javax.swing.JRadioButton();
         denyRBtn = new javax.swing.JRadioButton();
-        jProgressBar1 = new javax.swing.JProgressBar();
+        addCustPrg = new javax.swing.JProgressBar();
         clearCustomerBtn = new javax.swing.JButton();
         addCustomerBtn = new javax.swing.JButton();
         customerLastNameText = new javax.swing.JTextField();
@@ -113,7 +115,7 @@ public class ClientGUI extends javax.swing.JFrame {
         uavRBtn = new javax.swing.JRadioButton();
         clearVehicleBtn = new javax.swing.JButton();
         addVehicleBtn = new javax.swing.JButton();
-        jProgressBar2 = new javax.swing.JProgressBar();
+        addVehiclePrg = new javax.swing.JProgressBar();
         vehicleCategory = new javax.swing.JComboBox<>();
         vehicleMakeText = new javax.swing.JTextField();
         rentPanel = new javax.swing.JPanel();
@@ -129,12 +131,12 @@ public class ClientGUI extends javax.swing.JFrame {
         dayRentCB = new javax.swing.JComboBox<>();
         monthRentCB = new javax.swing.JComboBox<>();
         yearRentCB = new javax.swing.JComboBox<>();
-        jProgressBar3 = new javax.swing.JProgressBar();
+        rentPrg = new javax.swing.JProgressBar();
         rentBtn = new javax.swing.JButton();
         returnPanel = new javax.swing.JPanel();
         jLabel11 = new javax.swing.JLabel();
         returnCB = new javax.swing.JComboBox<>();
-        jProgressBar4 = new javax.swing.JProgressBar();
+        returnPrg = new javax.swing.JProgressBar();
         returnBtn = new javax.swing.JButton();
         jScrollPane5 = new javax.swing.JScrollPane();
         returnTextArea = new javax.swing.JTextArea();
@@ -153,9 +155,8 @@ public class ClientGUI extends javax.swing.JFrame {
         jLabel14 = new javax.swing.JLabel();
         jLabel15 = new javax.swing.JLabel();
         customersLNameText = new javax.swing.JTextField();
-        jLabel16 = new javax.swing.JLabel();
-        customersRentalStatusCB = new javax.swing.JComboBox<>();
         customersClearBtn = new javax.swing.JButton();
+        customersPrg = new javax.swing.JProgressBar();
         vehiclePanel = new javax.swing.JPanel();
         jScrollPane3 = new javax.swing.JScrollPane();
         vehiclesTable = new javax.swing.JTable();
@@ -166,18 +167,30 @@ public class ClientGUI extends javax.swing.JFrame {
         vehiclesMakeText = new javax.swing.JTextField();
         jLabel18 = new javax.swing.JLabel();
         jLabel19 = new javax.swing.JLabel();
-        jLabel20 = new javax.swing.JLabel();
-        vehiclesRentalStatusCB = new javax.swing.JComboBox<>();
         vehiclesClearBtn = new javax.swing.JButton();
         vehiclesCategoryCB = new javax.swing.JComboBox<>();
+        vehiclesPrg = new javax.swing.JProgressBar();
         reportsPanel = new javax.swing.JPanel();
         jLabel12 = new javax.swing.JLabel();
         reportsChk = new javax.swing.JCheckBox();
         jScrollPane4 = new javax.swing.JScrollPane();
         reportsTable = new javax.swing.JTable();
         jButton8 = new javax.swing.JButton();
+        dayReportsCB = new javax.swing.JComboBox<>();
+        monthReportsCB = new javax.swing.JComboBox<>();
+        yearReportsCB = new javax.swing.JComboBox<>();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        reportsTextArea = new javax.swing.JTextPane();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                formWindowClosing(evt);
+            }
+            public void windowOpened(java.awt.event.WindowEvent evt) {
+                formWindowOpened(evt);
+            }
+        });
 
         SelectionPanel.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         SelectionPanel.addChangeListener(new javax.swing.event.ChangeListener() {
@@ -231,11 +244,11 @@ public class ClientGUI extends javax.swing.JFrame {
         addCustomer.setLayout(addCustomerLayout);
         addCustomerLayout.setHorizontalGroup(
             addCustomerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jProgressBar1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(addCustPrg, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(addCustomerLayout.createSequentialGroup()
                 .addComponent(addCustomerBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(clearCustomerBtn, javax.swing.GroupLayout.DEFAULT_SIZE, 140, Short.MAX_VALUE))
+                .addComponent(clearCustomerBtn, javax.swing.GroupLayout.DEFAULT_SIZE, 167, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, addCustomerLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(addCustomerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
@@ -270,12 +283,12 @@ public class ClientGUI extends javax.swing.JFrame {
                 .addGroup(addCustomerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(allowRBtn)
                     .addComponent(denyRBtn))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 162, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 171, Short.MAX_VALUE)
                 .addGroup(addCustomerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(addCustomerBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(clearCustomerBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
-                .addComponent(jProgressBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(addCustPrg, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         addVehicle.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Vehicle", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 1, 12))); // NOI18N
@@ -322,7 +335,7 @@ public class ClientGUI extends javax.swing.JFrame {
         addVehicle.setLayout(addVehicleLayout);
         addVehicleLayout.setHorizontalGroup(
             addVehicleLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jProgressBar2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(addVehiclePrg, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(addVehicleLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(addVehicleLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -344,7 +357,7 @@ public class ClientGUI extends javax.swing.JFrame {
                     .addGroup(addVehicleLayout.createSequentialGroup()
                         .addComponent(addVehicleBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 146, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(clearVehicleBtn, javax.swing.GroupLayout.DEFAULT_SIZE, 139, Short.MAX_VALUE))))
+                        .addComponent(clearVehicleBtn, javax.swing.GroupLayout.DEFAULT_SIZE, 177, Short.MAX_VALUE))))
         );
         addVehicleLayout.setVerticalGroup(
             addVehicleLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -368,7 +381,7 @@ public class ClientGUI extends javax.swing.JFrame {
                     .addComponent(addVehicleBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(clearVehicleBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
-                .addComponent(jProgressBar2, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(addVehiclePrg, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         javax.swing.GroupLayout addPanelLayout = new javax.swing.GroupLayout(addPanel);
@@ -376,15 +389,15 @@ public class ClientGUI extends javax.swing.JFrame {
         addPanelLayout.setHorizontalGroup(
             addPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(addPanelLayout.createSequentialGroup()
-                .addComponent(addCustomer, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(addVehicle, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, 0))
+                .addComponent(addCustomer, javax.swing.GroupLayout.PREFERRED_SIZE, 335, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 35, Short.MAX_VALUE)
+                .addComponent(addVehicle, javax.swing.GroupLayout.PREFERRED_SIZE, 351, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
         addPanelLayout.setVerticalGroup(
             addPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(addCustomer, javax.swing.GroupLayout.DEFAULT_SIZE, 518, Short.MAX_VALUE)
-            .addComponent(addVehicle, javax.swing.GroupLayout.DEFAULT_SIZE, 518, Short.MAX_VALUE)
+            .addComponent(addCustomer, javax.swing.GroupLayout.DEFAULT_SIZE, 527, Short.MAX_VALUE)
+            .addComponent(addVehicle, javax.swing.GroupLayout.DEFAULT_SIZE, 527, Short.MAX_VALUE)
         );
 
         SelectionPanel.addTab("Add  ", null, addPanel);
@@ -399,6 +412,7 @@ public class ClientGUI extends javax.swing.JFrame {
             }
         });
 
+        cRentInfoText.setEditable(false);
         cRentInfoText.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
 
         jLabel8.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
@@ -412,6 +426,7 @@ public class ClientGUI extends javax.swing.JFrame {
             }
         });
 
+        vRentInfoText.setEditable(false);
         vRentInfoText.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
 
         jLabel9.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
@@ -435,11 +450,6 @@ public class ClientGUI extends javax.swing.JFrame {
                 dayRentCBItemStateChanged(evt);
             }
         });
-        dayRentCB.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                dayRentCBActionPerformed(evt);
-            }
-        });
 
         monthRentCB.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         monthRentCB.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "January", "February", "March", "Aprile", "May", "June", "July", "August", "September", "October", "November", "December" }));
@@ -458,8 +468,7 @@ public class ClientGUI extends javax.swing.JFrame {
             }
         });
 
-        jProgressBar3.setName(""); // NOI18N
-        jProgressBar3.setStringPainted(true);
+        rentPrg.setName(""); // NOI18N
 
         rentBtn.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         rentBtn.setText("Rent");
@@ -473,7 +482,7 @@ public class ClientGUI extends javax.swing.JFrame {
         rentPanel.setLayout(rentPanelLayout);
         rentPanelLayout.setHorizontalGroup(
             rentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jProgressBar3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(rentPrg, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(rentPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(rentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -488,7 +497,7 @@ public class ClientGUI extends javax.swing.JFrame {
                         .addGroup(rentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(cRentInfoText)
                             .addGroup(rentPanelLayout.createSequentialGroup()
-                                .addGap(0, 194, Short.MAX_VALUE)
+                                .addGap(0, 203, Short.MAX_VALUE)
                                 .addGroup(rentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(jLabel9)
                                     .addComponent(vehicleRentCB, javax.swing.GroupLayout.PREFERRED_SIZE, 245, javax.swing.GroupLayout.PREFERRED_SIZE)))))
@@ -531,10 +540,10 @@ public class ClientGUI extends javax.swing.JFrame {
                     .addComponent(dayRentCB, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(monthRentCB, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(yearRentCB, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 84, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 93, Short.MAX_VALUE)
                 .addComponent(rentBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jProgressBar3, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addComponent(rentPrg, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         SelectionPanel.addTab("Rent  ", null, rentPanel);
@@ -546,6 +555,11 @@ public class ClientGUI extends javax.swing.JFrame {
         returnCB.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
                 returnCBItemStateChanged(evt);
+            }
+        });
+        returnCB.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                returnCBMouseClicked(evt);
             }
         });
 
@@ -569,16 +583,6 @@ public class ClientGUI extends javax.swing.JFrame {
         dayReturnCB.setEditable(true);
         dayReturnCB.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         dayReturnCB.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31" }));
-        dayReturnCB.addItemListener(new java.awt.event.ItemListener() {
-            public void itemStateChanged(java.awt.event.ItemEvent evt) {
-                dayReturnCBItemStateChanged(evt);
-            }
-        });
-        dayReturnCB.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                dayReturnCBActionPerformed(evt);
-            }
-        });
 
         monthReturnCB.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         monthReturnCB.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "January", "February", "March", "Aprile", "May", "June", "July", "August", "September", "October", "November", "December" }));
@@ -601,7 +605,7 @@ public class ClientGUI extends javax.swing.JFrame {
         returnPanel.setLayout(returnPanelLayout);
         returnPanelLayout.setHorizontalGroup(
             returnPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jProgressBar4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(returnPrg, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, returnPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(returnPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
@@ -611,7 +615,7 @@ public class ClientGUI extends javax.swing.JFrame {
                         .addGroup(returnPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel11)
                             .addComponent(returnCB, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 90, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 99, Short.MAX_VALUE)
                         .addGroup(returnPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(returnPanelLayout.createSequentialGroup()
                                 .addComponent(dayReturnCB, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -640,11 +644,11 @@ public class ClientGUI extends javax.swing.JFrame {
                                 .addComponent(yearReturnCB, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addComponent(monthReturnCB, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)))))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 298, Short.MAX_VALUE)
+                .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 307, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(returnBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jProgressBar4, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(returnPrg, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         SelectionPanel.addTab("Return  ", null, returnPanel);
@@ -659,7 +663,7 @@ public class ClientGUI extends javax.swing.JFrame {
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.Integer.class, java.lang.String.class, java.lang.String.class, java.lang.Boolean.class
+                java.lang.Integer.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
             };
             boolean[] canEdit = new boolean [] {
                 false, false, false, false
@@ -693,14 +697,10 @@ public class ClientGUI extends javax.swing.JFrame {
             }
         });
 
+        customersText.setEditable(false);
         customersText.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
 
         customersFnameText.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        customersFnameText.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                customersFnameTextActionPerformed(evt);
-            }
-        });
 
         jLabel14.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         jLabel14.setText("First Name:");
@@ -709,20 +709,14 @@ public class ClientGUI extends javax.swing.JFrame {
         jLabel15.setText("Last Name:");
 
         customersLNameText.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        customersLNameText.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                customersLNameTextActionPerformed(evt);
-            }
-        });
-
-        jLabel16.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        jLabel16.setText("Rental Status:");
-
-        customersRentalStatusCB.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        customersRentalStatusCB.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "True", "False" }));
 
         customersClearBtn.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        customersClearBtn.setText("Clear");
+        customersClearBtn.setText("Delete");
+        customersClearBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                customersClearBtnActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout customersPanelLayout = new javax.swing.GroupLayout(customersPanel);
         customersPanel.setLayout(customersPanelLayout);
@@ -731,57 +725,58 @@ public class ClientGUI extends javax.swing.JFrame {
             .addGroup(customersPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(customersPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 702, Short.MAX_VALUE)
                     .addGroup(customersPanelLayout.createSequentialGroup()
                         .addGroup(customersPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(customersPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(customersCB, javax.swing.GroupLayout.Alignment.LEADING, 0, 250, Short.MAX_VALUE)
-                                .addComponent(customersFnameText, javax.swing.GroupLayout.Alignment.LEADING))
-                            .addComponent(jLabel14))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(jLabel14)
+                            .addComponent(customersFnameText, javax.swing.GroupLayout.PREFERRED_SIZE, 346, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(customersPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(customersText)
+                            .addGroup(customersPanelLayout.createSequentialGroup()
+                                .addComponent(jLabel15)
+                                .addContainerGap(304, Short.MAX_VALUE))
+                            .addComponent(customersLNameText)))
+                    .addGroup(customersPanelLayout.createSequentialGroup()
+                        .addGroup(customersPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(customersPrg, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 711, Short.MAX_VALUE)
                             .addGroup(customersPanelLayout.createSequentialGroup()
                                 .addGroup(customersPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(customersLNameText, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jLabel15))
+                                    .addComponent(jLabel2)
+                                    .addComponent(customersCB, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(customersPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel16)
-                                    .addComponent(customersRentalStatusCB, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, customersPanelLayout.createSequentialGroup()
-                        .addComponent(customersEditBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 412, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(customersClearBtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                .addContainerGap())
+                                .addComponent(customersText))
+                            .addGroup(customersPanelLayout.createSequentialGroup()
+                                .addComponent(customersEditBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 412, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(customersClearBtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                        .addContainerGap())))
         );
         customersPanelLayout.setVerticalGroup(
             customersPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(customersPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 261, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jLabel2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(customersPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(customersText, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(customersCB, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 27, Short.MAX_VALUE)
-                .addGroup(customersPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel14)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(customersPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel15)
-                    .addComponent(jLabel16))
+                    .addGroup(customersPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabel14)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(customersPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(customersFnameText, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(customersLNameText, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(customersRentalStatusCB, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(customersLNameText, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(customersPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(customersClearBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(customersEditBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap())
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 12, Short.MAX_VALUE)
+                .addComponent(customersPrg, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         SelectionPanel.addTab("Customers  ", null, customersPanel);
@@ -797,7 +792,7 @@ public class ClientGUI extends javax.swing.JFrame {
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.Integer.class, java.lang.String.class, java.lang.String.class, java.lang.Boolean.class
+                java.lang.Integer.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
             };
             boolean[] canEdit = new boolean [] {
                 false, false, false, false
@@ -831,14 +826,10 @@ public class ClientGUI extends javax.swing.JFrame {
             }
         });
 
+        vehiclesText.setEditable(false);
         vehiclesText.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
 
         vehiclesMakeText.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        vehiclesMakeText.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                vehiclesMakeTextActionPerformed(evt);
-            }
-        });
 
         jLabel18.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         jLabel18.setText("Make:");
@@ -846,14 +837,13 @@ public class ClientGUI extends javax.swing.JFrame {
         jLabel19.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         jLabel19.setText("Category:");
 
-        jLabel20.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        jLabel20.setText("Rental Status:");
-
-        vehiclesRentalStatusCB.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        vehiclesRentalStatusCB.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "True", "False" }));
-
         vehiclesClearBtn.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        vehiclesClearBtn.setText("Clear");
+        vehiclesClearBtn.setText("Delete");
+        vehiclesClearBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                vehiclesClearBtnActionPerformed(evt);
+            }
+        });
 
         vehiclesCategoryCB.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         vehiclesCategoryCB.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Sedan (R450)", "SUV (R500)" }));
@@ -865,60 +855,60 @@ public class ClientGUI extends javax.swing.JFrame {
             .addGroup(vehiclePanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(vehiclePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane3)
+                    .addComponent(vehiclesPrg, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 721, Short.MAX_VALUE)
                     .addGroup(vehiclePanelLayout.createSequentialGroup()
                         .addGroup(vehiclePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(vehiclePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                .addComponent(jLabel17, javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(vehiclesCB, javax.swing.GroupLayout.Alignment.LEADING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(vehiclesMakeText, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(jLabel18))
+                            .addComponent(jLabel17)
+                            .addComponent(vehiclesCB, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(vehiclePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(vehiclesText)
-                            .addGroup(vehiclePanelLayout.createSequentialGroup()
-                                .addGroup(vehiclePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(vehiclePanelLayout.createSequentialGroup()
-                                        .addComponent(jLabel19)
-                                        .addGap(203, 203, 203))
-                                    .addGroup(vehiclePanelLayout.createSequentialGroup()
-                                        .addComponent(vehiclesCategoryCB, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)))
-                                .addGroup(vehiclePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel20)
-                                    .addComponent(vehiclesRentalStatusCB, 0, 190, Short.MAX_VALUE)))))
+                        .addComponent(vehiclesText))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, vehiclePanelLayout.createSequentialGroup()
                         .addComponent(vehiclesEditBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 412, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(vehiclesClearBtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                        .addComponent(vehiclesClearBtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(vehiclePanelLayout.createSequentialGroup()
+                        .addGroup(vehiclePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addGroup(vehiclePanelLayout.createSequentialGroup()
+                                .addComponent(jLabel18)
+                                .addGap(391, 391, 391))
+                            .addGroup(vehiclePanelLayout.createSequentialGroup()
+                                .addComponent(vehiclesMakeText)
+                                .addGap(11, 11, 11)))
+                        .addGroup(vehiclePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(vehiclePanelLayout.createSequentialGroup()
+                                .addComponent(jLabel19)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addComponent(vehiclesCategoryCB, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                 .addContainerGap())
         );
         vehiclePanelLayout.setVerticalGroup(
             vehiclePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(vehiclePanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 270, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 256, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jLabel17)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(vehiclePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(vehiclesText, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(vehiclesCB, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 18, Short.MAX_VALUE)
-                .addGroup(vehiclePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(vehiclePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel19)
-                    .addComponent(jLabel20))
+                    .addGroup(vehiclePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabel18)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(vehiclePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(vehiclesMakeText, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(vehiclesRentalStatusCB, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(vehiclesCategoryCB, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(vehiclePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(vehiclesClearBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(vehiclesEditBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(vehiclesPrg, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
 
         SelectionPanel.addTab("Vehicles  ", null, vehiclePanel);
@@ -962,33 +952,87 @@ public class ClientGUI extends javax.swing.JFrame {
         reportsTable.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
 
         jButton8.setText("Custom Date");
+        jButton8.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton8ActionPerformed(evt);
+            }
+        });
+
+        dayReportsCB.setEditable(true);
+        dayReportsCB.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        dayReportsCB.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31" }));
+        dayReportsCB.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                dayReportsCBItemStateChanged(evt);
+            }
+        });
+        dayReportsCB.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                dayReportsCBActionPerformed(evt);
+            }
+        });
+
+        monthReportsCB.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        monthReportsCB.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "January", "February", "March", "Aprile", "May", "June", "July", "August", "September", "October", "November", "December" }));
+        monthReportsCB.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                monthReportsCBItemStateChanged(evt);
+            }
+        });
+
+        yearReportsCB.setEditable(true);
+        yearReportsCB.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        yearReportsCB.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "2017", "2016", "2015", "2014", "2013", "2012", "2011", "2010", "2009", "2008", "2007", "2006", "2005", "2004", "2003", "2002", "2001", "2000", "1999", "1998", "1997", "1996", "1995", "1994", "1993", "1992", "1991", "1990", "1989", "1988", "1987", "1986", "1985", "1984", "1983", "1982", "1981", "1980", "1979", "1978", "1977", "1976", "1975", "1974", "1973", "1972", "1971", "1970", "1969", "1968", "1967", "1966", "1965", "1964", "1963", "1962", "1961", "1960", "1959", "1958", "1957", "1956", "1955", "1954", "1953", "1952", "1951", "1950", "1949", "1948", "1947", "1946", "1945", "1944", "1943", "1942", "1941", "1940", "1939", "1938", "1937", "1936", "1935", "1934", "1933", "1932", "1931", "1930", "1929", "1928", "1927", "1926", "1925", "1924", "1923", "1922", "1921", "1920", "1919", "1918", "1917", "1916", "1915", "1914", "1913", "1912", "1911", "1910", "1909", "1908", "1907", "1906", "1905", "1904", "1903", "1902", "1901", "1900" }));
+        yearReportsCB.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                yearReportsCBItemStateChanged(evt);
+            }
+        });
+
+        reportsTextArea.setEditable(false);
+        jScrollPane2.setViewportView(reportsTextArea);
 
         javax.swing.GroupLayout reportsPanelLayout = new javax.swing.GroupLayout(reportsPanel);
         reportsPanel.setLayout(reportsPanelLayout);
         reportsPanelLayout.setHorizontalGroup(
             reportsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, reportsPanelLayout.createSequentialGroup()
+            .addGroup(reportsPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(reportsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 702, Short.MAX_VALUE)
-                    .addGroup(reportsPanelLayout.createSequentialGroup()
+                .addGroup(reportsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane4, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 711, Short.MAX_VALUE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, reportsPanelLayout.createSequentialGroup()
                         .addComponent(jLabel12)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(reportsChk)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jButton8, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(dayReportsCB, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(monthReportsCB, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(yearReportsCB, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButton8, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jScrollPane2))
                 .addContainerGap())
         );
         reportsPanelLayout.setVerticalGroup(
             reportsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(reportsPanelLayout.createSequentialGroup()
                 .addGap(30, 30, 30)
-                .addGroup(reportsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel12)
-                    .addComponent(reportsChk)
-                    .addComponent(jButton8, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(reportsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(reportsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabel12)
+                        .addComponent(reportsChk)
+                        .addComponent(jButton8, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(reportsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(dayReportsCB, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(reportsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(yearReportsCB, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(monthReportsCB, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addGap(18, 18, 18)
-                .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 436, Short.MAX_VALUE)
+                .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 376, Short.MAX_VALUE)
+                .addGap(18, 18, 18)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
 
@@ -1010,92 +1054,145 @@ public class ClientGUI extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void customersFnameTextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_customersFnameTextActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_customersFnameTextActionPerformed
-
-    private void customersLNameTextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_customersLNameTextActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_customersLNameTextActionPerformed
-
-    private void vehiclesMakeTextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_vehiclesMakeTextActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_vehiclesMakeTextActionPerformed
-
     private void addCustomerBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addCustomerBtnActionPerformed
-    String fName = customerNameText.getText();
-    String lName = customerLastNameText.getText();
-    String rental = "";
-    
-    if (fName.equals("") || lName.equals("")) {
-        
-        JOptionPane.showMessageDialog(rentPanel, "Please Fill in First Name, and Last Name");
-        
-    }
-    
-    else {
-        
-        if (addCustomerGroup.getSelection().equals(allowRBtn.getModel())) {
-            
-            rental = "1";
-            
+        addCustPrg.setVisible(true);
+        String fName = customerNameText.getText();
+        String lName = customerLastNameText.getText();
+        addCustPrg.setValue(0);
+        addCustPrg.setStringPainted(true);
+        addCustPrg.setString("");
+
+        if (fName.equals("") || lName.equals("")) {
+
+            JOptionPane.showMessageDialog(rentPanel, "Please Fill in First Name, and Last Name");
+
+        } else {
+
+            Thread add = new Thread() {
+
+                public void run() {
+                    String rental = "";
+                    if (addCustomerGroup.getSelection().equals(allowRBtn.getModel())) {
+
+                        rental = "1";
+
+                    } else {
+
+                        rental = "0";
+
+                    }
+                    addCustPrg.setValue(20);
+                    cmd = "UCINSERT INTO CUSTOMER VALUES(cust_id_seq.nextVal, '" + fName + "', '" + lName + "', '" + rental + "')";
+
+                    try {
+                        Thread.sleep(800);
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(ClientGUI.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    addCustPrg.setValue(40);
+                    cl.communicate(cmd);
+                    addCustPrg.setValue(60);
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(ClientGUI.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+
+                    populateLists();
+                    addCustPrg.setValue(100);
+                    addCustPrg.setString("Update Successful");
+                    try {
+                        Thread.sleep(800);
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(ClientGUI.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    addCustPrg.setVisible(false);
+                }
+            };
+            add.start();
+
         }
-        else {
-            
-            rental = "0";
-            
-        }
-        
-        cmd = "UCINSERT INTO CUSTOMER VALUES(cust_id_seq.NEXTVAL, '" + fName + "', '" + lName + "', '" + rental + "')";
-        cl.communicate(cmd);
-        System.out.println(cmd);
-        populateLists();
-    }
-    
+
     }//GEN-LAST:event_addCustomerBtnActionPerformed
 
     private void addVehicleBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addVehicleBtnActionPerformed
-    String make = vehicleMakeText.getText();
-    double price = 0;
-    String category = "";
-    String rental;
-    
-    if (make.equals("")) {
-        
-        JOptionPane.showMessageDialog(rentPanel, "Please Fill in Vehicle Make");
-        
-    }
-    
-    else {
-        
-        switch (vehicleCategory.getSelectedIndex()) {
-            case 0:
-                category = "SUV";
-                price = 450;
-                break;
-            case 1:
-                category = "SEDAN";
-                price = 500;
-                break;
+        String make = vehicleMakeText.getText();
+
+        addVehiclePrg.setVisible(true);
+        addVehiclePrg.setStringPainted(true);
+        addVehiclePrg.setString("");
+
+        if (make.equals("")) {
+
+            JOptionPane.showMessageDialog(rentPanel, "Please Fill in Vehicle Make");
+
+        } else {
+
+            Thread add = new Thread() {
+                public void run() {
+                    double price = 0;
+                    String category = "";
+                    String rental;
+
+                    switch (vehicleCategory.getSelectedIndex()) {
+
+                        case 0:
+                            category = "SUV";
+                            price = 450;
+                            break;
+                        case 1:
+                            category = "SEDAN";
+                            price = 500;
+                            break;
+                    }
+
+                    addVehiclePrg.setValue(20);
+                    try {
+                        Thread.sleep(800);
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(ClientGUI.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+
+                    if (addVehicleGroup.getSelection().equals(avRBtn.getModel())) {
+
+                        rental = "0";
+
+                    } else {
+
+                        rental = "1";
+
+                    }
+
+                    addVehiclePrg.setValue(40);
+                    try {
+                        Thread.sleep(800);
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(ClientGUI.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+
+                    cmd = "UVINSERT INTO VEHICLE VALUES(veh_id_seq.nextVAL, '" + make + "', '" + category + "', '" + price + "', '" + rental + "')";
+                    cl.communicate(cmd);
+                    addVehiclePrg.setValue(80);
+                    try {
+                        Thread.sleep(800);
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(ClientGUI.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+
+                    
+                    populateLists();
+                    addVehiclePrg.setValue(100);
+                    addVehiclePrg.setString("Update Successful");
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(ClientGUI.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    addVehiclePrg.setVisible(false);
+                }
+            };
+            add.start();
         }
-        
-        
-        if (addVehicleGroup.getSelection().equals(avRBtn.getModel())) {
-            
-            rental = "0";
-            
-        }
-        else {
-            
-            rental = "1";
-            
-        }
-        
-        cmd = "UVINSERT INTO VEHICLE VALUES(veh_id_seq.nextVAL, '" + make + "', '" + category + "', '" + price + "', '" + rental+ "')"; 
-        cl.communicate("QCSELECT * FROM CUSTOMER");
-        System.out.println(cmd);
-        populateLists();
-    }
     }//GEN-LAST:event_addVehicleBtnActionPerformed
 
     private void clearCustomerBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clearCustomerBtnActionPerformed
@@ -1112,169 +1209,181 @@ public class ClientGUI extends javax.swing.JFrame {
 
     private void categoryRentCBItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_categoryRentCBItemStateChanged
         vehicleRentCB.removeAllItems();
-        for (int i = 0; i<v.size();i++) {
-                    
-                    String cat;
-                    if (categoryRentCB.getSelectedIndex() == 0) {
-                        cat = "Sedan";
-                    } else {
-                       cat = "SUV";
-                    }
-                    
-                    if (v.get(i).getCategory().equals(cat) && v.get(i).isAvailableForRent()) {
-                        vehicleRentCB.addItem(v.get(i).getVehNumber()+"");
-                    }
-                }   
-        
+        for (int i = 0; i < v.size(); i++) {
+
+            String cat;
+            if (categoryRentCB.getSelectedIndex() == 0) {
+                cat = "Sedan";
+            } else {
+                cat = "SUV";
+            }
+
+            if (v.get(i).getCategory().equals(cat) && v.get(i).isAvailableForRent()) {
+                vehicleRentCB.addItem(v.get(i).getVehNumber() + "");
+            }
+        }
+
     }//GEN-LAST:event_categoryRentCBItemStateChanged
 
     private void dayRentCBItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_dayRentCBItemStateChanged
         if (dayRentCB.getSelectedItem() == null) {
-            
-        }
-        else if (Integer.parseInt(dayRentCB.getSelectedItem().toString()) > rentMaxDay) {
-            dayRentCB.setSelectedIndex(rentMaxDay-1);
-            dayRentCB.setSelectedItem(dayRentCB.getItemAt(rentMaxDay-1));
-        }
-        else if(Integer.parseInt(dayRentCB.getSelectedItem().toString()) < 1) {
+
+        } else if (Integer.parseInt(dayRentCB.getSelectedItem().toString()) > rentMaxDay) {
+            dayRentCB.setSelectedIndex(rentMaxDay - 1);
+            dayRentCB.setSelectedItem(dayRentCB.getItemAt(rentMaxDay - 1));
+        } else if (Integer.parseInt(dayRentCB.getSelectedItem().toString()) < 1) {
             dayRentCB.setSelectedIndex(0);
             dayRentCB.setSelectedItem(dayRentCB.getItemAt(0));
         }
     }//GEN-LAST:event_dayRentCBItemStateChanged
 
-    private void dayRentCBActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_dayRentCBActionPerformed
-        
-    }//GEN-LAST:event_dayRentCBActionPerformed
-
     private void monthRentCBItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_monthRentCBItemStateChanged
-        Calendar current = Calendar.getInstance();
-        current.set(Calendar.YEAR, Integer.parseInt(yearRentCB.getSelectedItem().toString()));
-        current.set(Calendar.MONTH, monthRentCB.getSelectedIndex());
-        rentMaxDay = current.getActualMaximum(Calendar.DAY_OF_MONTH);
-        
+        Calendar currentTime = Calendar.getInstance();
+        currentTime.set(Calendar.YEAR, Integer.parseInt(yearRentCB.getSelectedItem().toString()));
+        currentTime.set(Calendar.MONTH, monthRentCB.getSelectedIndex());
+        rentMaxDay = currentTime.getActualMaximum(Calendar.DAY_OF_MONTH);
+
         dayRentCB.removeAllItems();
-        
-        for (int i = 0; i<rentMaxDay; i++) {
-            int day = i+1;
-            dayRentCB.addItem(day+"");
+
+        for (int i = 0; i < rentMaxDay; i++) {
+            int day = i + 1;
+            dayRentCB.addItem(day + "");
         }
     }//GEN-LAST:event_monthRentCBItemStateChanged
 
     private void yearRentCBItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_yearRentCBItemStateChanged
         if (Integer.parseInt(yearRentCB.getSelectedItem().toString()) > rentMaxYear) {
-            yearRentCB.setSelectedIndex(yearRentCB.getItemCount()-1);
+            yearRentCB.setSelectedIndex(yearRentCB.getItemCount() - 1);
             yearRentCB.setSelectedItem(yearRentCB.getItemAt(0));
-        }
-        else if(Integer.parseInt(yearRentCB.getSelectedItem().toString()) < 1900) {
+        } else if (Integer.parseInt(yearRentCB.getSelectedItem().toString()) < 1900) {
             yearRentCB.setSelectedIndex(0);
-            yearRentCB.setSelectedItem(yearRentCB.getItemAt(yearRentCB.getItemCount()-1));
+            yearRentCB.setSelectedItem(yearRentCB.getItemAt(yearRentCB.getItemCount() - 1));
         }
     }//GEN-LAST:event_yearRentCBItemStateChanged
 
     private void SelectionPanelStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_SelectionPanelStateChanged
-    int index = SelectionPanel.getSelectedIndex();
+        int index = SelectionPanel.getSelectedIndex();
         switch (index) {
             case 1:
                 customerRentCB.removeAllItems();
                 vehicleRentCB.removeAllItems();
-                for (int i = 0; i<c.size();i++) {
+                for (int i = 0; i < c.size(); i++) {
                     if (c.get(i).getCanRent()) {
-                        customerRentCB.addItem(c.get(i).getCustNumber()+"");
+                        customerRentCB.addItem(c.get(i).getCustNumber() + "");
                     }
                 }
-                
-                for (int i = 0; i<v.size();i++) {
+
+                for (int i = 0; i < v.size(); i++) {
                     String cat = "Sedan";
                     if (categoryRentCB.getSelectedIndex() == 0) {
                         cat = "Sedan";
                     } else {
-                       cat = "SUV";
+                        cat = "SUV";
                     }
-                    
+
                     if (v.get(i).getCategory().equals(cat) && v.get(i).isAvailableForRent()) {
-                        vehicleRentCB.addItem(v.get(i).getVehNumber()+"");
+                        vehicleRentCB.addItem(v.get(i).getVehNumber() + "");
                     }
                 }
-                Calendar current = Calendar.getInstance();
+
                 yearRentCB.setSelectedItem(current.get(Calendar.YEAR));
                 monthRentCB.setSelectedIndex(current.get(Calendar.MONTH));
-                dayRentCB.setSelectedIndex(current.get(Calendar.DAY_OF_MONTH));
-                
+                dayRentCB.setSelectedIndex(current.get(Calendar.DAY_OF_MONTH) - 1);
+
                 break;
-            
+
             case 2:
                 returnCB.removeAllItems();
-                for (int i = 0; i<r.size();i++) {
-                    
+                for (int i = 0; i < r.size(); i++) {
+
                     if (r.get(i).getDateReturned().equals("NA")) {
-                        returnCB.addItem(r.get(i).getRentalNumber()+"");
+                        returnCB.addItem(r.get(i).getRentalNumber() + "");
                     }
                 }
-                
-                current = Calendar.getInstance();
+
                 yearReturnCB.setSelectedItem(current.get(Calendar.YEAR));
                 monthReturnCB.setSelectedIndex(current.get(Calendar.MONTH));
-                dayReturnCB.setSelectedIndex(current.get(Calendar.DAY_OF_MONTH));
+                dayReturnCB.setSelectedIndex(current.get(Calendar.DAY_OF_MONTH) - 1);
                 break;
-            
+
             case 3:
                 customersCB.removeAllItems();
                 DefaultTableModel cModel = (DefaultTableModel) customersTable.getModel();
                 cModel.setRowCount(0);
-                
-                for (int i = 0; i<c.size();i++) {
-                    customersCB.addItem(c.get(i).getCustNumber()+"");
-                    
-                    Object[] row = { c.get(i).getCustNumber(), c.get(i).getFirstName(), c.get(i).getSurName(), c.get(i).getCanRent() };
-                    
+
+                for (int i = 0; i < c.size(); i++) {
+                    if (c.get(i).getCanRent()) {
+                        customersCB.addItem(c.get(i).getCustNumber() + "");
+                    }
+                    String rent = "No";
+                    if (c.get(i).getCanRent()) {
+                        rent = "Yes";
+                    }
+                    Object[] row = {c.get(i).getCustNumber(), c.get(i).getFirstName(), c.get(i).getSurName(), rent};
+
                     cModel.addRow(row);
                 }
                 break;
-            
+
             case 4:
                 vehiclesCB.removeAllItems();
                 DefaultTableModel vModel = (DefaultTableModel) vehiclesTable.getModel();
                 vModel.setRowCount(0);
-                
-                for (int i = 0; i<v.size();i++) {
-                    vehiclesCB.addItem(v.get(i).getVehNumber()+"");
-                    
-                    Object[] row = { v.get(i).getVehNumber(), v.get(i).getMake(), v.get(i).getCategory(), v.get(i).isAvailableForRent()};
+
+                for (int i = 0; i < v.size(); i++) {
+                    if (v.get(i).isAvailableForRent()) {
+                        vehiclesCB.addItem(v.get(i).getVehNumber() + "");
+                    }
+                    String rent = "Unavailable";
+                    if (v.get(i).isAvailableForRent()) {
+                        rent = "Available";
+                    }
+                    Object[] row = {v.get(i).getVehNumber(), v.get(i).getMake(), v.get(i).getCategory(), rent};
 
                     vModel.addRow(row);
                 }
-                
+
                 break;
-            
+
             case 5:
                 DefaultTableModel rModel = (DefaultTableModel) reportsTable.getModel();
                 rModel.setRowCount(0);
-                
+                int totalOutstanding = 0;
+                double totalRental = 0;
+
                 if (reportsChk.isSelected()) {
-                    for (int i = 0; i<r.size();i++) {
-                        if (!r.get(i).getDateReturned().equals("NA")){
-                                Object[] row = { r.get(i).getRentalNumber(), r.get(i).getDateRented(), r.get(i).getDateReturned(), r.get(i).getPricePerDay(), r.get(i).getTotalRental(), r.get(i).getCustNumber(), r.get(i).getVehNumber()};
-                                rModel.addRow(row);
+                    for (int i = 0; i < r.size(); i++) {
+                        if (!r.get(i).getDateReturned().equals("NA")) {
+                            Object[] row = {r.get(i).getRentalNumber(), r.get(i).getDateRented(), r.get(i).getDateReturned(), r.get(i).getPricePerDay(), r.get(i).getTotalRental(), r.get(i).getCustNumber(), r.get(i).getVehNumber()};
+                            rModel.addRow(row);
+                            totalRental += r.get(i).getTotalRental();
                         }
                     }
-                    
-                }
-                else {
-                   for (int i = 0; i<r.size();i++) {
-                        if (r.get(i).getDateReturned().equals("NA")){
-                                Object[] row = { r.get(i).getRentalNumber(), r.get(i).getDateRented(), r.get(i).getDateReturned(), r.get(i).getPricePerDay(), r.get(i).getTotalRental(), r.get(i).getCustNumber(), r.get(i).getVehNumber()};
-                                rModel.addRow(row);
+                    String report = String.format("%.2f", totalRental);
+                    reportsTextArea.setText("Total Rentals: R" + report);
+
+                } else {
+                    for (int i = 0; i < r.size(); i++) {
+                        if (r.get(i).getDateReturned().equals("NA")) {
+                            Object[] row = {r.get(i).getRentalNumber(), r.get(i).getDateRented(), r.get(i).getDateReturned(), r.get(i).getPricePerDay(), r.get(i).getTotalRental(), r.get(i).getCustNumber(), r.get(i).getVehNumber()};
+                            rModel.addRow(row);
+                            totalOutstanding++;
                         }
-                    } 
+                    }
+                    reportsTextArea.setText("Total Outstanding: " + totalOutstanding + " rentals");
                 }
+
+                yearReportsCB.setSelectedItem(current.get(Calendar.YEAR));
+                monthReportsCB.setSelectedIndex(current.get(Calendar.MONTH));
+                dayReportsCB.setSelectedIndex(current.get(Calendar.DAY_OF_MONTH) - 1);
                 break;
         }
     }//GEN-LAST:event_SelectionPanelStateChanged
 
     private void customerRentCBItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_customerRentCBItemStateChanged
         if (customerRentCB.getSelectedItem() != null) {
-            for (int i = 0; i<c.size();i++) {
-                if (c.get(i).getCustNumber() == Integer.parseInt((String)customerRentCB.getSelectedItem())) {
+            for (int i = 0; i < c.size(); i++) {
+                if (c.get(i).getCustNumber() == Integer.parseInt((String) customerRentCB.getSelectedItem())) {
                     String output = c.get(i).getFirstName() + " " + c.get(i).getSurName();
                     cRentInfoText.setText(output);
                 }
@@ -1284,9 +1393,9 @@ public class ClientGUI extends javax.swing.JFrame {
 
     private void vehicleRentCBItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_vehicleRentCBItemStateChanged
         if (vehicleRentCB.getSelectedItem() != null) {
-            for (int i = 0; i<v.size();i++) {
-                if (v.get(i).getVehNumber() == Integer.parseInt((String)vehicleRentCB.getSelectedItem())) {
-                    String output = v.get(i).getMake()+ " " + v.get(i).getCategory();
+            for (int i = 0; i < v.size(); i++) {
+                if (v.get(i).getVehNumber() == Integer.parseInt((String) vehicleRentCB.getSelectedItem())) {
+                    String output = v.get(i).getMake() + " " + v.get(i).getCategory();
                     vRentInfoText.setText(output);
                 }
             }
@@ -1294,223 +1403,685 @@ public class ClientGUI extends javax.swing.JFrame {
     }//GEN-LAST:event_vehicleRentCBItemStateChanged
 
     private void rentBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rentBtnActionPerformed
-        String customerN = (String)customerRentCB.getSelectedItem();
-        String rentalPrice = "450";
-        if (vehicleCategory.getSelectedIndex() == 1) {
-            rentalPrice = "500";
-        }
-        String vehicleNum = (String)vehicleRentCB.getSelectedItem();
-        int m = monthRentCB.getSelectedIndex()+1;
-        String month;
-        if (m < 10) {
-            
-            month = "0"+m;
-        }
-        else {
-            month = "" + m;
-        }
-        String date = (String) yearRentCB.getSelectedItem() + "-" + month + "-" + dayRentCB.getSelectedItem();
+        rentPrg.setVisible(true);
+        rentPrg.setStringPainted(true);
+        rentPrg.setString("");
+
+        int year, month, day;
+
+        year = Integer.parseInt((yearRentCB.getSelectedItem() + ""));
+        month = monthRentCB.getSelectedIndex();
+        day = Integer.parseInt(dayRentCB.getSelectedItem() + "");
+
+        Calendar date = Calendar.getInstance();
+        date.set(Calendar.YEAR, year);
+        date.set(Calendar.MONTH, month);
+        date.set(Calendar.DAY_OF_MONTH, day);
+
         
-        cmd = "URINSERT INTO RENTAL (rentalNumber, dateRental, pricePerDay, custNumber, vehNumber)" +
-                            "VALUES (rental_id_seq.NEXTVAL, TO_DATE('"+date+"', 'yyyy-mm-dd'), "+rentalPrice+", '"+customerN+"', '"+vehicleNum+"')" +
-                            "#UPDATE CUSTOMER SET canRent = '0' WHERE custNumber = '"+customerN+"'#UPDATE VEHICLE SET availableForRent = '0' " +
-                            "WHERE vehNumber = '"+vehicleNum+"'";
-        System.out.println(cmd);
-        cl.communicate(cmd);
-        populateLists();
-        
+        if (date.after(current)) {
+            JOptionPane.showMessageDialog(null, "Please Enter a valid Date");
+        } else {
+            Thread rent = new Thread() {
+                public void run() {
+                    String customerN = (String) customerRentCB.getSelectedItem();
+                    String rentalPrice = "450";
+                    if (vehicleCategory.getSelectedIndex() == 1) {
+                        rentalPrice = "500";
+                    }
+                    String vehicleNum = (String) vehicleRentCB.getSelectedItem();
+                    int m = monthRentCB.getSelectedIndex() + 1;
+                    String month;
+                    if (m < 10) {
+
+                        month = "0" + m;
+                    } else {
+                        month = "" + m;
+                    }
+                    String date = yearRentCB.getSelectedItem() + "-" + month + "-" + dayRentCB.getSelectedItem();
+
+                    rentPrg.setValue(30);
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(ClientGUI.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+
+                    cmd = "URINSERT INTO RENTAL (rentalNumber, dateRental, pricePerDay, custNumber, vehNumber)"
+                            + "VALUES (rental_id_seq.NEXTVAL, TO_DATE('" + date + "', 'yyyy-mm-dd'), " + rentalPrice + ", '" + customerN + "', '" + vehicleNum + "')"
+                            + "#UPDATE CUSTOMER SET canRent = '0' WHERE custNumber = '" + customerN + "'#UPDATE VEHICLE SET availableForRent = '0' "
+                            + "WHERE vehNumber = '" + vehicleNum + "'";
+                    rentPrg.setValue(70);
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(ClientGUI.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    cl.communicate(cmd);
+                    populateLists();
+                    rentPrg.setValue(100);
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(ClientGUI.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    rentPrg.setString("Update Successful");
+                    try {
+                        Thread.sleep(2000);
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(ClientGUI.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    rentPrg.setVisible(false);
+                }
+            };
+            rent.start();
+        }
     }//GEN-LAST:event_rentBtnActionPerformed
 
     private void returnCBItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_returnCBItemStateChanged
         if (returnCB.getSelectedItem() != null) {
-            returnTextArea.setText("");
-            int rentalN = Integer.parseInt((String)returnCB.getSelectedItem());
-            int customerN=0;
-            int vehicleN=0;
+
+            int rentalN = Integer.parseInt((String) returnCB.getSelectedItem());
+            int customerN = 0;
+            int vehicleN = 0;
             String rentalDate = "";
-            
-            
-            for (int i = 0; i<r.size();i++) {
-                    if (r.get(i).getRentalNumber() == rentalN) {
-                        customerN = r.get(i).getCustNumber();
-                        vehicleN = r.get(i).getVehNumber();
-                        rentalDate = r.get(i).getDateRented();
+
+            for (int i = 0; i < r.size(); i++) {
+                if (r.get(i).getRentalNumber() == rentalN) {
+                    customerN = r.get(i).getCustNumber();
+                    vehicleN = r.get(i).getVehNumber();
+                    rentalDate = r.get(i).getDateRented();
+                }
+            }
+
+            if (clearText) {
+                returnTextArea.setText("");
+
+                for (int i = 0; i < c.size(); i++) {
+                    if (c.get(i).getCustNumber() == customerN) {
+                        returnTextArea.append("Customer: " + customerN + "\nName: " + c.get(i).getFirstName() + "\nSurname: " + c.get(i).getSurName() + "\n");
                     }
                 }
-            
-            for (int i=0; i<c.size();i++) {
-                if (c.get(i).getCustNumber() == customerN) {
-                    returnTextArea.append("Customer: " + customerN + "\nName: " + c.get(i).getFirstName() + "\nSurname: " + c.get(i).getSurName() + "\n");
+
+                for (int i = 0; i < v.size(); i++) {
+                    if (v.get(i).getVehNumber() == vehicleN) {
+                        returnTextArea.append("\nVehicle: " + vehicleN + "\nMake: " + v.get(i).getMake() + "\nCategory: " + v.get(i).getCategory() + "\nRental Price: " + v.get(i).getRentalPrice());
+                    }
                 }
             }
-            
-            for (int i=0; i<v.size(); i++) {
-                if (v.get(i).getVehNumber() == vehicleN) {
-                    returnTextArea.append("\nVehicle: " + vehicleN + "\nMake: " + v.get(i).getMake() + "\nCategory: " + v.get(i).getCategory() + "\nRental Price: " + v.get(i).getRentalPrice());
-                }
-            }
-            
+
         }
     }//GEN-LAST:event_returnCBItemStateChanged
 
     private void returnBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_returnBtnActionPerformed
-        String border = "\n======================================================================================";
-        int rentalN = Integer.parseInt((String)returnCB.getSelectedItem());
-        int customerN = 0;
-        int vehicleN = 0;
-        String returnMonth ="";
-        String returnDay = "";
-        
-        int day = dayReturnCB.getSelectedIndex()+1;
-        if (day < 10) {
-            returnDay = "0"+day;
-        }
-        else {
-            returnDay = day+"";
-        }
-        
-        int month = monthReturnCB.getSelectedIndex()+1;
-        if (month < 10) {
-            returnMonth = "0" + month;
-        }
-        else {
-            returnMonth = month+"";
-        }
-        
-        String returnDate = yearReturnCB.getSelectedItem() + "/" + returnMonth + "/" + returnDay; 
-        
-        String rentalDate;
-        String total="";
-        
-        for (int i=0; i<r.size();i++) {
-            if (rentalN == r.get(i).getRentalNumber()) {
-                r.get(i).setDateReturned(returnDate);
-                rentalDate = r.get(i).getDateRented();
-                customerN = r.get(i).getCustNumber();
-                vehicleN = r.get(i).getVehNumber();
-                total = String.format("%.2f", r.get(i).getTotalRental());
-                String ppd = String.format("%.2f", r.get(i).getPricePerDay());
-                returnTextArea.append(border + "\n\nRental Date: " + rentalDate + "\nReturnDate: " + returnDate + "\nPrice Per Day: R" + ppd + "\nDays Rented: " + r.get(i).calcNumberOfDays() + "\n\nTotal Charge: R" + total);
+        returnPrg.setVisible(true);
+        returnPrg.setStringPainted(true);
+        returnPrg.setString("");
+        clearText = false;
+
+        int year, month, day;
+
+        year = Integer.parseInt((yearReturnCB.getSelectedItem() + ""));
+        month = monthReturnCB.getSelectedIndex();
+        day = dayReturnCB.getSelectedIndex();
+        int rentalN = Integer.parseInt((String) returnCB.getSelectedItem());
+        String[] rentalDate = null;
+
+        for (int i = 0; i < r.size(); i++) {
+            if (r.get(i).getRentalNumber() == rentalN) {
+                rentalDate = r.get(i).getDateRented().split("/");
             }
         }
-        
-        returnDate = returnDate.replace("/", "-");
-        
-        cmd = "URUPDATE RENTAL SET dateReturned= TO_DATE('" + returnDate + "', 'yyyy-mm-dd')" +" WHERE rentalNumber='" + rentalN +
-                            "'#UPDATE CUSTOMER SET canRent = '1' WHERE custNumber = '"+ customerN +"'#UPDATE VEHICLE SET availableForRent = '1' " +
-                            "WHERE vehNumber = '"+vehicleN+"'";
-        System.out.println(cmd);
-        cl.communicate(cmd);
-        populateLists();
-        
-        
-        for (int i = 0; i<r.size();i++) {
-                    
-                    if (r.get(i).getDateReturned().equals("NA")) {
-                        returnCB.addItem(r.get(i).getRentalNumber()+"");
+
+        Calendar dateReturned = new GregorianCalendar();
+        dateReturned.set(Integer.parseInt(rentalDate[0]), Integer.parseInt(rentalDate[1]), Integer.parseInt(rentalDate[2]));
+        Calendar date = Calendar.getInstance();
+        date.set(Calendar.YEAR, year);
+        date.set(Calendar.MONTH, month);
+        date.set(Calendar.DAY_OF_MONTH, day);
+
+        if (date.after(current)) {
+            JOptionPane.showMessageDialog(null, "Please Enter a valid Date");
+        } else if (date.before(dateReturned)) {
+            JOptionPane.showMessageDialog(null, "Please Enter a valid Date");
+        } else {
+            Thread returnRental = new Thread() {
+                public void run() {
+                    String border = "\n======================================================================================";
+                    int rentalN = Integer.parseInt((String) returnCB.getSelectedItem());
+                    int customerN = 0;
+                    int vehicleN = 0;
+                    String returnMonth = "";
+                    String returnDay = "";
+
+                    int day = dayReturnCB.getSelectedIndex() + 1;
+                    if (day < 10) {
+                        returnDay = "0" + day;
+                    } else {
+                        returnDay = day + "";
                     }
+
+                    int month = monthReturnCB.getSelectedIndex() + 1;
+                    if (month < 10) {
+                        returnMonth = "0" + month;
+                    } else {
+                        returnMonth = month + "";
+                    }
+
+                    String returnDate = yearReturnCB.getSelectedItem() + "/" + returnMonth + "/" + returnDay;
+                    returnPrg.setValue(25);
+                    try {
+                        Thread.sleep(800);
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(ClientGUI.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    String rentalDate;
+                    String total = "";
+
+                    for (int i = 0; i < r.size(); i++) {
+                        if (rentalN == r.get(i).getRentalNumber()) {
+                            r.get(i).setDateReturned(returnDate);
+                            rentalDate = r.get(i).getDateRented();
+                            customerN = r.get(i).getCustNumber();
+                            vehicleN = r.get(i).getVehNumber();
+                            total = String.format("%.2f", r.get(i).getTotalRental());
+                            String ppd = String.format("%.2f", r.get(i).getPricePerDay());
+                            returnTextArea.append(border + "\n\nRental Date: " + rentalDate + "\nReturnDate: " + returnDate + "\nPrice Per Day: R" + ppd + "\nDays Rented: " + r.get(i).calcNumberOfDays() + "\n\nTotal Charge: R" + total);
+                        }
+                    }
+
+                    returnDate = returnDate.replace("/", "-");
+
+                    returnPrg.setValue(55);
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(ClientGUI.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+
+                    cmd = "URUPDATE RENTAL SET dateReturned= TO_DATE('" + returnDate + "', 'yyyy-mm-dd')" + " WHERE rentalNumber='" + rentalN
+                            + "'#UPDATE CUSTOMER SET canRent = '1' WHERE custNumber = '" + customerN + "'#UPDATE VEHICLE SET availableForRent = '1' "
+                            + "WHERE vehNumber = '" + vehicleN + "'";
+                    
+                    cl.communicate(cmd);
+                    populateLists();
+
+                    returnPrg.setValue(85);
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(ClientGUI.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    returnCB.removeAllItems();
+                    for (int i = 0; i < r.size(); i++) {
+
+                        if (r.get(i).getDateReturned().equals("NA")) {
+                            returnCB.addItem(r.get(i).getRentalNumber() + "");
+                        }
+                    }
+                    returnPrg.setValue(100);
+                    returnPrg.setString("Update Successful");
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(ClientGUI.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    returnPrg.setVisible(false);
                 }
+            };
+            returnRental.start();
+        }
     }//GEN-LAST:event_returnBtnActionPerformed
 
     private void reportsChkItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_reportsChkItemStateChanged
         DefaultTableModel rModel = (DefaultTableModel) reportsTable.getModel();
         rModel.setRowCount(0);
-                
-                if (reportsChk.isSelected()) {
-                    for (int i = 0; i<r.size();i++) {
-                        if (!r.get(i).getDateReturned().equals("NA")){
-                                Object[] row = { r.get(i).getRentalNumber(), r.get(i).getDateRented(), r.get(i).getDateReturned(), r.get(i).getPricePerDay(), r.get(i).getTotalRental(), r.get(i).getCustNumber(), r.get(i).getVehNumber()};
-                                rModel.addRow(row);
-                        }
-                    }
-                    
+        double totalRental = 0;
+        double totalOutstanding = 0;
+
+        if (reportsChk.isSelected()) {
+            for (int i = 0; i < r.size(); i++) {
+                if (!r.get(i).getDateReturned().equals("NA")) {
+                    Object[] row = {r.get(i).getRentalNumber(), r.get(i).getDateRented(), r.get(i).getDateReturned(), r.get(i).getPricePerDay(), r.get(i).getTotalRental(), r.get(i).getCustNumber(), r.get(i).getVehNumber()};
+                    rModel.addRow(row);
+                    totalRental += r.get(i).getTotalRental();
                 }
-                else {
-                   for (int i = 0; i<r.size();i++) {
-                        if (r.get(i).getDateReturned().equals("NA")){
-                                Object[] row = { r.get(i).getRentalNumber(), r.get(i).getDateRented(), r.get(i).getDateReturned(), r.get(i).getPricePerDay(), r.get(i).getTotalRental(), r.get(i).getCustNumber(), r.get(i).getVehNumber()};
-                                rModel.addRow(row);
-                        }
-                    } 
+            }
+            String report = String.format("%.2f", totalRental);
+            reportsTextArea.setText("Total Rentals: R" + report);
+
+        } else {
+            for (int i = 0; i < r.size(); i++) {
+                if (r.get(i).getDateReturned().equals("NA")) {
+                    Object[] row = {r.get(i).getRentalNumber(), r.get(i).getDateRented(), r.get(i).getDateReturned(), r.get(i).getPricePerDay(), r.get(i).getTotalRental(), r.get(i).getCustNumber(), r.get(i).getVehNumber()};
+                    rModel.addRow(row);
+                    totalOutstanding++;
                 }
+            }
+
+            reportsTextArea.setText("Total Outstanding: " + totalOutstanding + " rentals");
+        }
     }//GEN-LAST:event_reportsChkItemStateChanged
 
-    private void dayReturnCBItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_dayReturnCBItemStateChanged
-        // TODO add your handling code here:
-    }//GEN-LAST:event_dayReturnCBItemStateChanged
-
-    private void dayReturnCBActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_dayReturnCBActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_dayReturnCBActionPerformed
-
     private void monthReturnCBItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_monthReturnCBItemStateChanged
-        // TODO add your handling code here:
+        Calendar currentTime = Calendar.getInstance();
+        currentTime.set(Calendar.YEAR, Integer.parseInt(yearReturnCB.getSelectedItem().toString()));
+        currentTime.set(Calendar.MONTH, monthReturnCB.getSelectedIndex());
+        rentMaxDay = currentTime.getActualMaximum(Calendar.DAY_OF_MONTH);
+
+        dayReturnCB.removeAllItems();
+
+        for (int i = 0; i < rentMaxDay; i++) {
+            int day = i + 1;
+            dayReturnCB.addItem(day + "");
+        }
+
     }//GEN-LAST:event_monthReturnCBItemStateChanged
 
     private void yearReturnCBItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_yearReturnCBItemStateChanged
-        // TODO add your handling code here:
+        if (Integer.parseInt(yearReturnCB.getSelectedItem().toString()) > rentMaxYear) {
+            yearReturnCB.setSelectedIndex(yearReturnCB.getItemCount() - 1);
+            yearReturnCB.setSelectedItem(yearReturnCB.getItemAt(0));
+        } else if (Integer.parseInt(yearReturnCB.getSelectedItem().toString()) < 1900) {
+            yearReturnCB.setSelectedIndex(0);
+            yearReturnCB.setSelectedItem(yearReturnCB.getItemAt(yearReturnCB.getItemCount() - 1));
+        }
     }//GEN-LAST:event_yearReturnCBItemStateChanged
 
     private void customersCBItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_customersCBItemStateChanged
         if (customersCB.getSelectedItem() != null) {
-            for (int i=0; i<c.size();i++) {
-                if (c.get(i).getCustNumber() == Integer.parseInt((String)customersCB.getSelectedItem())) {
+            for (int i = 0; i < c.size(); i++) {
+                if (c.get(i).getCustNumber() == Integer.parseInt((String) customersCB.getSelectedItem())) {
                     customersText.setText(c.get(i).getFirstName() + " " + c.get(i).getSurName());
                 }
             }
-        }    
+        }
     }//GEN-LAST:event_customersCBItemStateChanged
 
     private void customersEditBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_customersEditBtnActionPerformed
+        customersPrg.setVisible(true);
+        customersPrg.setStringPainted(true);
+        customersPrg.setString("");
         String fName = customersFnameText.getText();
         String lName = customersLNameText.getText();
         if (fName.equals("") || lName.equals("")) {
             JOptionPane.showMessageDialog(null, "Please Fill in both Customer First Name and Last Name.");
-        }
-        else {
-            cmd = "UCUPDATE CUSTOMER SET firstName='" + customersFnameText.getText() + "' , surname='" + customersLNameText.getText()+"' WHERE custNumber='" + customersCB.getSelectedItem()+"'";
-            cl.communicate(cmd);
-            populateLists();
-            
+        } else {
+            Thread edit = new Thread() {
+                public void run() {
+                    try {
+                        Thread.sleep(400);
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(ClientGUI.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    cmd = "UCUPDATE CUSTOMER SET firstName='" + customersFnameText.getText() + "' , surname='" + customersLNameText.getText() + "' WHERE custNumber='" + customersCB.getSelectedItem() + "'";
+                    customersPrg.setValue(50);
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(ClientGUI.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    cl.communicate(cmd);
+                    populateLists();
+
+                    customersPrg.setValue(100);
+                    customersPrg.setString("Update Successful");
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(ClientGUI.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    customersPrg.setVisible(false);
+
+                    customersCB.removeAllItems();
+                    DefaultTableModel cModel = (DefaultTableModel) customersTable.getModel();
+                    cModel.setRowCount(0);
+
+                    for (int i = 0; i < c.size(); i++) {
+                        if (c.get(i).getCanRent()) {
+                            customersCB.addItem(c.get(i).getCustNumber() + "");
+                        }
+                        String rent = "No";
+                        if (c.get(i).getCanRent()) {
+                            rent = "Yes";
+                        }
+                        Object[] row = {c.get(i).getCustNumber(), c.get(i).getFirstName(), c.get(i).getSurName(), rent};
+                        cModel.addRow(row);
+                    }
+
+                }
+            };
+            edit.start();
+
         }
     }//GEN-LAST:event_customersEditBtnActionPerformed
 
     private void vehiclesEditBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_vehiclesEditBtnActionPerformed
+        vehiclesPrg.setVisible(true);
+        vehiclesPrg.setStringPainted(true);
+        vehiclesPrg.setString("");
+
         String make = vehiclesMakeText.getText();
-        int cat = vehiclesCategoryCB.getSelectedIndex();
-        String category = "Sedan";
-        int price = 0;
-        if (cat == 0) {
-            price = 450;
-        }
-        else {
-            price = 500;
-            category = "SUV";
-        }
+
         if (make.equals("")) {
             JOptionPane.showMessageDialog(null, "Please Fill in Vehicle Make");
-        }
-        else {
-            cmd = "UVUPDATE VEHICLE SET make='" + make +"', category='" + category + "', rentalPrice=" + price + " WHERE vehNumber='" + vehiclesCB.getSelectedItem()+"'";
-            cl.communicate(cmd);
-            populateLists();
+        } else {
+            Thread edit = new Thread() {
+                public void run() {
+                    try {
+                        Thread.sleep(400);
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(ClientGUI.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+
+                    int cat = vehiclesCategoryCB.getSelectedIndex();
+                    String category = "Sedan";
+                    int price = 0;
+                    if (cat == 0) {
+                        price = 450;
+                    } else {
+                        price = 500;
+                        category = "SUV";
+                    }
+                    try {
+                        Thread.sleep(800);
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(ClientGUI.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    vehiclesPrg.setValue(50);
+                    cmd = "UVUPDATE VEHICLE SET make='" + make + "', category='" + category + "', rentalPrice=" + price + " WHERE vehNumber='" + vehiclesCB.getSelectedItem() + "'";
+                    try {
+                        Thread.sleep(800);
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(ClientGUI.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+
+                    vehiclesPrg.setValue(100);
+                    vehiclesPrg.setString("Update Successful");
+
+                    cl.communicate(cmd);
+                    populateLists();
+
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(ClientGUI.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+
+                    vehiclesPrg.setVisible(false);
+                    vehiclesCB.removeAllItems();
+                    DefaultTableModel vModel = (DefaultTableModel) vehiclesTable.getModel();
+                    vModel.setRowCount(0);
+
+                    for (int i = 0; i < v.size(); i++) {
+                        if (v.get(i).isAvailableForRent()) {
+                            vehiclesCB.addItem(v.get(i).getVehNumber() + "");
+                        }
+                        String rent = "Unavailable";
+                        if (v.get(i).isAvailableForRent()) {
+                            rent = "Available";
+                        }
+                        Object[] row = {v.get(i).getVehNumber(), v.get(i).getMake(), v.get(i).getCategory(), rent};
+
+                        vModel.addRow(row);
+                    }
+                }
+            };
+            edit.start();
         }
     }//GEN-LAST:event_vehiclesEditBtnActionPerformed
 
     private void vehiclesCBItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_vehiclesCBItemStateChanged
         if (vehiclesCB.getSelectedItem() != null) {
-            for (int i=0; i<v.size();i++) {
-                if (v.get(i).getVehNumber() == Integer.parseInt((String)vehiclesCB.getSelectedItem())) {
+            for (int i = 0; i < v.size(); i++) {
+                if (v.get(i).getVehNumber() == Integer.parseInt((String) vehiclesCB.getSelectedItem())) {
                     vehiclesText.setText(v.get(i).getMake() + " " + v.get(i).getCategory());
                 }
             }
-        } 
+        }
     }//GEN-LAST:event_vehiclesCBItemStateChanged
+
+    private void dayReportsCBItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_dayReportsCBItemStateChanged
+        // TODO add your handling code here:
+    }//GEN-LAST:event_dayReportsCBItemStateChanged
+
+    private void dayReportsCBActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_dayReportsCBActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_dayReportsCBActionPerformed
+
+    private void monthReportsCBItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_monthReportsCBItemStateChanged
+        // TODO add your handling code here:
+    }//GEN-LAST:event_monthReportsCBItemStateChanged
+
+    private void yearReportsCBItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_yearReportsCBItemStateChanged
+        // TODO add your handling code here:
+    }//GEN-LAST:event_yearReportsCBItemStateChanged
+
+    private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
+        DefaultTableModel rModel = (DefaultTableModel) reportsTable.getModel();
+        rModel.setRowCount(0);
+
+        int day = dayReportsCB.getSelectedIndex() + 1;
+        int month = monthReportsCB.getSelectedIndex() + 1;
+        String year = yearReportsCB.getSelectedItem() + "";
+        String customDay = "";
+        String customMonth = "";
+        double totalRental = 0;
+        int totalOutstanding = 0;
+
+        if (day < 10) {
+            customDay = "0" + day;
+        } else {
+            customDay = "" + day;
+        }
+
+        if (month < 10) {
+            customMonth = "0" + month;
+        } else {
+            customMonth = "" + month;
+        }
+
+        String customDate = year + "/" + customMonth + "/" + customDay;
+
+        if (reportsChk.isSelected()) {
+            for (int i = 0; i < r.size(); i++) {
+                if ((!r.get(i).getDateReturned().equals("NA")) && r.get(i).getDateRented().equals(customDate)) {
+                    Object[] row = {r.get(i).getRentalNumber(), r.get(i).getDateRented(), r.get(i).getDateReturned(), r.get(i).getPricePerDay(), r.get(i).getTotalRental(), r.get(i).getCustNumber(), r.get(i).getVehNumber()};
+                    rModel.addRow(row);
+                    totalRental += r.get(i).getTotalRental();
+                }
+            }
+            String report = String.format("%.2f", totalRental);
+            reportsTextArea.setText("Total Rentals: R" + report);
+
+        } else {
+            for (int i = 0; i < r.size(); i++) {
+                if (r.get(i).getDateReturned().equals("NA") && r.get(i).getDateRented().equals(customDate)) {
+                    Object[] row = {r.get(i).getRentalNumber(), r.get(i).getDateRented(), r.get(i).getDateReturned(), r.get(i).getPricePerDay(), r.get(i).getTotalRental(), r.get(i).getCustNumber(), r.get(i).getVehNumber()};
+                    rModel.addRow(row);
+                    totalOutstanding++;
+                }
+            }
+            reportsTextArea.setText("Total Outstanding: " + totalOutstanding + " rentals");
+        }
+    }//GEN-LAST:event_jButton8ActionPerformed
+
+    private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+        cmd = "CLOSE";
+        cl.communicate(cmd);
+    }//GEN-LAST:event_formWindowClosing
+
+    private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
+        addCustPrg.setVisible(false);
+        addVehiclePrg.setVisible(false);
+        rentPrg.setVisible(false);
+        customersPrg.setVisible(false);
+        current.add(Calendar.DATE, 1);
+    }//GEN-LAST:event_formWindowOpened
+
+    private void returnCBMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_returnCBMouseClicked
+        clearText = true;
+        int rentalN = Integer.parseInt((String) returnCB.getSelectedItem());
+        int customerN = 0;
+        int vehicleN = 0;
+        String rentalDate = "";
+
+        for (int i = 0; i < c.size(); i++) {
+            if (c.get(i).getCustNumber() == customerN) {
+                returnTextArea.append("Customer: " + customerN + "\nName: " + c.get(i).getFirstName() + "\nSurname: " + c.get(i).getSurName() + "\n");
+            }
+        }
+
+        for (int i = 0; i < v.size(); i++) {
+            if (v.get(i).getVehNumber() == vehicleN) {
+                returnTextArea.append("\nVehicle: " + vehicleN + "\nMake: " + v.get(i).getMake() + "\nCategory: " + v.get(i).getCategory() + "\nRental Price: " + v.get(i).getRentalPrice());
+            }
+        }
+    }//GEN-LAST:event_returnCBMouseClicked
+
+    private void customersClearBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_customersClearBtnActionPerformed
+        customersPrg.setVisible(true);
+        customersPrg.setStringPainted(true);
+        customersPrg.setString("");
+
+        Thread del = new Thread() {
+            public void run() {
+                String id = customersCB.getSelectedItem() + "";
+                try {
+                    Thread.sleep(800);
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(ClientGUI.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                customersPrg.setValue(50);
+                String confirm = JOptionPane.showInputDialog("Are You Sure You Wish to Delete this Record? (Enter Customer Number to Confirm):");
+                if (confirm.equals(id)) {
+                    cmd = "UC DELETE FROM CUSTOMER WHERE custNumber= '" + id + "'";
+                    cl.communicate(cmd);
+                    try {
+                        Thread.sleep(400);
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(ClientGUI.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    customersPrg.setValue(100);
+                    customersPrg.setString("Update Successful");
+                    populateLists();
+
+                    customersCB.removeAllItems();
+                    DefaultTableModel cModel = (DefaultTableModel) customersTable.getModel();
+                    cModel.setRowCount(0);
+
+                    for (int i = 0; i < c.size(); i++) {
+                        if (c.get(i).getCanRent()) {
+                            customersCB.addItem(c.get(i).getCustNumber() + "");
+                        }
+                        String rent = "No";
+                        if (c.get(i).getCanRent()) {
+                            rent = "Yes";
+                        }
+                        Object[] row = {c.get(i).getCustNumber(), c.get(i).getFirstName(), c.get(i).getSurName(), rent};
+                        cModel.addRow(row);
+                    }
+
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(ClientGUI.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                } else {
+                    try {
+                        Thread.sleep(400);
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(ClientGUI.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    customersPrg.setValue(100);
+                    customersPrg.setString("Operation Cancelled");
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(ClientGUI.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+                customersPrg.setVisible(false);
+
+            }
+        };
+        del.start();
+    }//GEN-LAST:event_customersClearBtnActionPerformed
+
+    private void vehiclesClearBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_vehiclesClearBtnActionPerformed
+        vehiclesPrg.setVisible(true);
+        vehiclesPrg.setStringPainted(true);
+        vehiclesPrg.setString("");
+
+        Thread del = new Thread() {
+            public void run() {
+                String id = vehiclesCB.getSelectedItem() + "";
+                try {
+                    Thread.sleep(800);
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(ClientGUI.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                vehiclesPrg.setValue(50);
+                String confirm = JOptionPane.showInputDialog("Are You Sure You Wish to Delete this Record? (Enter Vehicle Number to Confirm):");
+                if (confirm.equals(id)) {
+                    cmd = "UC DELETE FROM VEHICLE WHERE vehNumber= '" + id + "'";
+                    cl.communicate(cmd);
+                    try {
+                        Thread.sleep(400);
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(ClientGUI.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    vehiclesPrg.setValue(100);
+                    vehiclesPrg.setString("Update Successful");
+                    populateLists();
+
+                    vehiclesCB.removeAllItems();
+                    DefaultTableModel vModel = (DefaultTableModel) vehiclesTable.getModel();
+                    vModel.setRowCount(0);
+
+                    for (int i = 0; i < v.size(); i++) {
+                        if (v.get(i).isAvailableForRent()) {
+                            vehiclesCB.addItem(v.get(i).getVehNumber() + "");
+                        }
+                        String rent = "Unavailable";
+                        if (v.get(i).isAvailableForRent()) {
+                            rent = "Available";
+                        }
+                        Object[] row = {v.get(i).getVehNumber(), v.get(i).getMake(), v.get(i).getCategory(), rent};
+
+                        vModel.addRow(row);
+                    }
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(ClientGUI.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                } else {
+                    try {
+                        Thread.sleep(400);
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(ClientGUI.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    vehiclesPrg.setValue(100);
+                    vehiclesPrg.setString("Operation Cancelled");
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(ClientGUI.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+                vehiclesPrg.setVisible(false);
+
+            }
+        };
+        del.start();
+    }//GEN-LAST:event_vehiclesClearBtnActionPerformed
 
     /**
      * @param args the command line arguments
      */
     public static void main(String args[]) {
+
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
@@ -1533,24 +2104,25 @@ public class ClientGUI extends javax.swing.JFrame {
             java.util.logging.Logger.getLogger(ClientGUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
-           
+
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 new ClientGUI().setVisible(true);
+
                 cl.init();
+                cl.communicate("REBUILD");
                 populateLists();
-                System.out.println(v.toString());
-                
+
             }
         });
-        
+
     }
-    
-   
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTabbedPane SelectionPanel;
+    private javax.swing.JProgressBar addCustPrg;
     private javax.swing.JPanel addCustomer;
     private javax.swing.JButton addCustomerBtn;
     private javax.swing.ButtonGroup addCustomerGroup;
@@ -1558,6 +2130,7 @@ public class ClientGUI extends javax.swing.JFrame {
     private javax.swing.JPanel addVehicle;
     private javax.swing.JButton addVehicleBtn;
     private javax.swing.ButtonGroup addVehicleGroup;
+    private javax.swing.JProgressBar addVehiclePrg;
     private javax.swing.JRadioButton allowRBtn;
     private javax.swing.JRadioButton avRBtn;
     private javax.swing.JTextField cRentInfoText;
@@ -1573,10 +2146,11 @@ public class ClientGUI extends javax.swing.JFrame {
     private javax.swing.JTextField customersFnameText;
     private javax.swing.JTextField customersLNameText;
     private javax.swing.JPanel customersPanel;
-    private javax.swing.JComboBox<String> customersRentalStatusCB;
+    private javax.swing.JProgressBar customersPrg;
     private javax.swing.JTable customersTable;
     private javax.swing.JTextField customersText;
     private javax.swing.JComboBox<String> dayRentCB;
+    private javax.swing.JComboBox<String> dayReportsCB;
     private javax.swing.JComboBox<String> dayReturnCB;
     private javax.swing.JRadioButton denyRBtn;
     private javax.swing.JButton jButton8;
@@ -1587,12 +2161,10 @@ public class ClientGUI extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel15;
-    private javax.swing.JLabel jLabel16;
     private javax.swing.JLabel jLabel17;
     private javax.swing.JLabel jLabel18;
     private javax.swing.JLabel jLabel19;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel20;
     private javax.swing.JLabel jLabel21;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -1601,24 +2173,25 @@ public class ClientGUI extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
-    private javax.swing.JProgressBar jProgressBar1;
-    private javax.swing.JProgressBar jProgressBar2;
-    private javax.swing.JProgressBar jProgressBar3;
-    private javax.swing.JProgressBar jProgressBar4;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JScrollPane jScrollPane5;
     private javax.swing.JComboBox<String> monthRentCB;
+    private javax.swing.JComboBox<String> monthReportsCB;
     private javax.swing.JComboBox<String> monthReturnCB;
     private javax.swing.JButton rentBtn;
     private javax.swing.JPanel rentPanel;
+    private javax.swing.JProgressBar rentPrg;
     private javax.swing.JCheckBox reportsChk;
     private javax.swing.JPanel reportsPanel;
     private javax.swing.JTable reportsTable;
+    private javax.swing.JTextPane reportsTextArea;
     private javax.swing.JButton returnBtn;
     private javax.swing.JComboBox<String> returnCB;
     private javax.swing.JPanel returnPanel;
+    private javax.swing.JProgressBar returnPrg;
     private javax.swing.JTextArea returnTextArea;
     private javax.swing.JRadioButton uavRBtn;
     private javax.swing.JTextField vRentInfoText;
@@ -1631,10 +2204,11 @@ public class ClientGUI extends javax.swing.JFrame {
     private javax.swing.JButton vehiclesClearBtn;
     private javax.swing.JButton vehiclesEditBtn;
     private javax.swing.JTextField vehiclesMakeText;
-    private javax.swing.JComboBox<String> vehiclesRentalStatusCB;
+    private javax.swing.JProgressBar vehiclesPrg;
     private javax.swing.JTable vehiclesTable;
     private javax.swing.JTextField vehiclesText;
     private javax.swing.JComboBox<String> yearRentCB;
+    private javax.swing.JComboBox<String> yearReportsCB;
     private javax.swing.JComboBox<String> yearReturnCB;
     // End of variables declaration//GEN-END:variables
 }
