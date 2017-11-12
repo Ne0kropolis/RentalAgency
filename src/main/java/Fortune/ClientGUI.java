@@ -15,7 +15,7 @@ public class ClientGUI extends javax.swing.JFrame {
     
     String cmd ="";
     int rentMaxDay = 31;
-    int rentMaxYear = 2018;
+    int rentMaxYear = 2017;
     static Client cl = new Client();
     
     static ArrayList<Customer> c = new ArrayList<Customer>();
@@ -23,6 +23,10 @@ public class ClientGUI extends javax.swing.JFrame {
     static ArrayList<Rental> r = new ArrayList<Rental>();
     
     public static void populateLists() {
+        c.clear();
+        v.clear();
+        r.clear();
+        
         cl.communicate("QCSELECT * FROM CUSTOMER");
         
         for (int i = 0; i<cl.getResultSet().size(); i++) {
@@ -125,11 +129,8 @@ public class ClientGUI extends javax.swing.JFrame {
         dayRentCB = new javax.swing.JComboBox<>();
         monthRentCB = new javax.swing.JComboBox<>();
         yearRentCB = new javax.swing.JComboBox<>();
-        hRentSpn = new javax.swing.JSpinner();
-        mRentSpn = new javax.swing.JSpinner();
         jProgressBar3 = new javax.swing.JProgressBar();
         rentBtn = new javax.swing.JButton();
-        rentClearBtn = new javax.swing.JButton();
         returnPanel = new javax.swing.JPanel();
         jLabel11 = new javax.swing.JLabel();
         returnCB = new javax.swing.JComboBox<>();
@@ -137,6 +138,10 @@ public class ClientGUI extends javax.swing.JFrame {
         returnBtn = new javax.swing.JButton();
         jScrollPane5 = new javax.swing.JScrollPane();
         returnTextArea = new javax.swing.JTextArea();
+        jLabel21 = new javax.swing.JLabel();
+        dayReturnCB = new javax.swing.JComboBox<>();
+        monthReturnCB = new javax.swing.JComboBox<>();
+        yearReturnCB = new javax.swing.JComboBox<>();
         customersPanel = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         customersTable = new javax.swing.JTable();
@@ -161,10 +166,10 @@ public class ClientGUI extends javax.swing.JFrame {
         vehiclesMakeText = new javax.swing.JTextField();
         jLabel18 = new javax.swing.JLabel();
         jLabel19 = new javax.swing.JLabel();
-        vehiclesCategoryText = new javax.swing.JTextField();
         jLabel20 = new javax.swing.JLabel();
         vehiclesRentalStatusCB = new javax.swing.JComboBox<>();
         vehiclesClearBtn = new javax.swing.JButton();
+        vehiclesCategoryCB = new javax.swing.JComboBox<>();
         reportsPanel = new javax.swing.JPanel();
         jLabel12 = new javax.swing.JLabel();
         reportsChk = new javax.swing.JCheckBox();
@@ -382,7 +387,7 @@ public class ClientGUI extends javax.swing.JFrame {
             .addComponent(addVehicle, javax.swing.GroupLayout.DEFAULT_SIZE, 518, Short.MAX_VALUE)
         );
 
-        SelectionPanel.addTab("Add  ", new javax.swing.ImageIcon(getClass().getResource("/if_add_126583.png")), addPanel); // NOI18N
+        SelectionPanel.addTab("Add  ", null, addPanel);
 
         jLabel7.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         jLabel7.setText("Customer:");
@@ -446,18 +451,12 @@ public class ClientGUI extends javax.swing.JFrame {
 
         yearRentCB.setEditable(true);
         yearRentCB.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        yearRentCB.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "2018", "2017", "2016", "2015", "2014", "2013", "2012", "2011", "2010", "2009", "2008", "2007", "2006", "2005", "2004", "2003", "2002", "2001", "2000", "1999", "1998", "1997", "1996", "1995", "1994", "1993", "1992", "1991", "1990", "1989", "1988", "1987", "1986", "1985", "1984", "1983", "1982", "1981", "1980", "1979", "1978", "1977", "1976", "1975", "1974", "1973", "1972", "1971", "1970", "1969", "1968", "1967", "1966", "1965", "1964", "1963", "1962", "1961", "1960", "1959", "1958", "1957", "1956", "1955", "1954", "1953", "1952", "1951", "1950", "1949", "1948", "1947", "1946", "1945", "1944", "1943", "1942", "1941", "1940", "1939", "1938", "1937", "1936", "1935", "1934", "1933", "1932", "1931", "1930", "1929", "1928", "1927", "1926", "1925", "1924", "1923", "1922", "1921", "1920", "1919", "1918", "1917", "1916", "1915", "1914", "1913", "1912", "1911", "1910", "1909", "1908", "1907", "1906", "1905", "1904", "1903", "1902", "1901", "1900" }));
+        yearRentCB.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "2017", "2016", "2015", "2014", "2013", "2012", "2011", "2010", "2009", "2008", "2007", "2006", "2005", "2004", "2003", "2002", "2001", "2000", "1999", "1998", "1997", "1996", "1995", "1994", "1993", "1992", "1991", "1990", "1989", "1988", "1987", "1986", "1985", "1984", "1983", "1982", "1981", "1980", "1979", "1978", "1977", "1976", "1975", "1974", "1973", "1972", "1971", "1970", "1969", "1968", "1967", "1966", "1965", "1964", "1963", "1962", "1961", "1960", "1959", "1958", "1957", "1956", "1955", "1954", "1953", "1952", "1951", "1950", "1949", "1948", "1947", "1946", "1945", "1944", "1943", "1942", "1941", "1940", "1939", "1938", "1937", "1936", "1935", "1934", "1933", "1932", "1931", "1930", "1929", "1928", "1927", "1926", "1925", "1924", "1923", "1922", "1921", "1920", "1919", "1918", "1917", "1916", "1915", "1914", "1913", "1912", "1911", "1910", "1909", "1908", "1907", "1906", "1905", "1904", "1903", "1902", "1901", "1900" }));
         yearRentCB.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
                 yearRentCBItemStateChanged(evt);
             }
         });
-
-        hRentSpn.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        hRentSpn.setModel(new javax.swing.SpinnerNumberModel(0, 0, 24, 1));
-
-        mRentSpn.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        mRentSpn.setModel(new javax.swing.SpinnerNumberModel(0, 0, 59, 1));
 
         jProgressBar3.setName(""); // NOI18N
         jProgressBar3.setStringPainted(true);
@@ -467,14 +466,6 @@ public class ClientGUI extends javax.swing.JFrame {
         rentBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 rentBtnActionPerformed(evt);
-            }
-        });
-
-        rentClearBtn.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        rentClearBtn.setText("Clear");
-        rentClearBtn.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                rentClearBtnActionPerformed(evt);
             }
         });
 
@@ -497,27 +488,21 @@ public class ClientGUI extends javax.swing.JFrame {
                         .addGroup(rentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(cRentInfoText)
                             .addGroup(rentPanelLayout.createSequentialGroup()
-                                .addGap(0, 0, Short.MAX_VALUE)
+                                .addGap(0, 194, Short.MAX_VALUE)
                                 .addGroup(rentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(jLabel9)
                                     .addComponent(vehicleRentCB, javax.swing.GroupLayout.PREFERRED_SIZE, 245, javax.swing.GroupLayout.PREFERRED_SIZE)))))
                     .addGroup(rentPanelLayout.createSequentialGroup()
-                        .addComponent(dayRentCB, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(monthRentCB, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(yearRentCB, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(hRentSpn, javax.swing.GroupLayout.DEFAULT_SIZE, 57, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(mRentSpn, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(rentPanelLayout.createSequentialGroup()
-                        .addComponent(jLabel10)
+                        .addGroup(rentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(rentPanelLayout.createSequentialGroup()
+                                .addComponent(dayRentCB, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(monthRentCB, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(yearRentCB, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jLabel10))
                         .addGap(0, 0, Short.MAX_VALUE))
-                    .addGroup(rentPanelLayout.createSequentialGroup()
-                        .addComponent(rentBtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(rentClearBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(rentBtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         rentPanelLayout.setVerticalGroup(
@@ -545,18 +530,14 @@ public class ClientGUI extends javax.swing.JFrame {
                 .addGroup(rentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(dayRentCB, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(monthRentCB, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(yearRentCB, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(hRentSpn, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(mRentSpn, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 89, Short.MAX_VALUE)
-                .addGroup(rentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(rentBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(rentClearBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addComponent(yearRentCB, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 84, Short.MAX_VALUE)
+                .addComponent(rentBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jProgressBar3, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
-        SelectionPanel.addTab("Rent  ", new javax.swing.ImageIcon(getClass().getResource("/Rent.png")), rentPanel); // NOI18N
+        SelectionPanel.addTab("Rent  ", null, rentPanel);
 
         jLabel11.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         jLabel11.setText("Rental Number:");
@@ -582,6 +563,40 @@ public class ClientGUI extends javax.swing.JFrame {
         returnTextArea.setRows(5);
         jScrollPane5.setViewportView(returnTextArea);
 
+        jLabel21.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        jLabel21.setText("Return Date:");
+
+        dayReturnCB.setEditable(true);
+        dayReturnCB.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        dayReturnCB.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31" }));
+        dayReturnCB.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                dayReturnCBItemStateChanged(evt);
+            }
+        });
+        dayReturnCB.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                dayReturnCBActionPerformed(evt);
+            }
+        });
+
+        monthReturnCB.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        monthReturnCB.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "January", "February", "March", "Aprile", "May", "June", "July", "August", "September", "October", "November", "December" }));
+        monthReturnCB.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                monthReturnCBItemStateChanged(evt);
+            }
+        });
+
+        yearReturnCB.setEditable(true);
+        yearReturnCB.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        yearReturnCB.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "2017", "2016", "2015", "2014", "2013", "2012", "2011", "2010", "2009", "2008", "2007", "2006", "2005", "2004", "2003", "2002", "2001", "2000", "1999", "1998", "1997", "1996", "1995", "1994", "1993", "1992", "1991", "1990", "1989", "1988", "1987", "1986", "1985", "1984", "1983", "1982", "1981", "1980", "1979", "1978", "1977", "1976", "1975", "1974", "1973", "1972", "1971", "1970", "1969", "1968", "1967", "1966", "1965", "1964", "1963", "1962", "1961", "1960", "1959", "1958", "1957", "1956", "1955", "1954", "1953", "1952", "1951", "1950", "1949", "1948", "1947", "1946", "1945", "1944", "1943", "1942", "1941", "1940", "1939", "1938", "1937", "1936", "1935", "1934", "1933", "1932", "1931", "1930", "1929", "1928", "1927", "1926", "1925", "1924", "1923", "1922", "1921", "1920", "1919", "1918", "1917", "1916", "1915", "1914", "1913", "1912", "1911", "1910", "1909", "1908", "1907", "1906", "1905", "1904", "1903", "1902", "1901", "1900" }));
+        yearReturnCB.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                yearReturnCBItemStateChanged(evt);
+            }
+        });
+
         javax.swing.GroupLayout returnPanelLayout = new javax.swing.GroupLayout(returnPanel);
         returnPanel.setLayout(returnPanelLayout);
         returnPanelLayout.setHorizontalGroup(
@@ -596,26 +611,45 @@ public class ClientGUI extends javax.swing.JFrame {
                         .addGroup(returnPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel11)
                             .addComponent(returnCB, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(0, 418, Short.MAX_VALUE)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 90, Short.MAX_VALUE)
+                        .addGroup(returnPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(returnPanelLayout.createSequentialGroup()
+                                .addComponent(dayReturnCB, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(monthReturnCB, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(yearReturnCB, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jLabel21))))
                 .addContainerGap())
         );
         returnPanelLayout.setVerticalGroup(
             returnPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(returnPanelLayout.createSequentialGroup()
                 .addGap(41, 41, 41)
-                .addComponent(jLabel11)
+                .addGroup(returnPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(returnPanelLayout.createSequentialGroup()
+                        .addComponent(jLabel11)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(returnCB, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(returnPanelLayout.createSequentialGroup()
+                        .addComponent(jLabel21)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(returnPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(dayReturnCB, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(returnPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(yearReturnCB, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(monthReturnCB, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)))))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(returnCB, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 298, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 284, Short.MAX_VALUE)
-                .addGap(18, 18, 18)
                 .addComponent(returnBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jProgressBar4, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
-        SelectionPanel.addTab("Return  ", new javax.swing.ImageIcon(getClass().getResource("/return.png")), returnPanel); // NOI18N
+        SelectionPanel.addTab("Return  ", null, returnPanel);
 
+        customersTable.setAutoCreateRowSorter(true);
         customersTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
@@ -643,12 +677,21 @@ public class ClientGUI extends javax.swing.JFrame {
 
         customersEditBtn.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         customersEditBtn.setText("Edit");
+        customersEditBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                customersEditBtnActionPerformed(evt);
+            }
+        });
 
         jLabel2.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         jLabel2.setText("Customer:");
 
         customersCB.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        customersCB.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        customersCB.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                customersCBItemStateChanged(evt);
+            }
+        });
 
         customersText.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
 
@@ -688,7 +731,7 @@ public class ClientGUI extends javax.swing.JFrame {
             .addGroup(customersPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(customersPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 702, Short.MAX_VALUE)
                     .addGroup(customersPanelLayout.createSequentialGroup()
                         .addGroup(customersPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(customersPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
@@ -709,8 +752,8 @@ public class ClientGUI extends javax.swing.JFrame {
                                     .addComponent(customersRentalStatusCB, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, customersPanelLayout.createSequentialGroup()
                         .addComponent(customersEditBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 412, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(customersClearBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(customersClearBtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         customersPanelLayout.setVerticalGroup(
@@ -741,8 +784,9 @@ public class ClientGUI extends javax.swing.JFrame {
                 .addContainerGap())
         );
 
-        SelectionPanel.addTab("Customers  ", new javax.swing.ImageIcon(getClass().getResource("/people-512.png")), customersPanel); // NOI18N
+        SelectionPanel.addTab("Customers  ", null, customersPanel);
 
+        vehiclesTable.setAutoCreateRowSorter(true);
         vehiclesTable.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         vehiclesTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -771,12 +815,21 @@ public class ClientGUI extends javax.swing.JFrame {
 
         vehiclesEditBtn.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         vehiclesEditBtn.setText("Edit");
+        vehiclesEditBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                vehiclesEditBtnActionPerformed(evt);
+            }
+        });
 
         jLabel17.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         jLabel17.setText("Vehicle:");
 
         vehiclesCB.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        vehiclesCB.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        vehiclesCB.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                vehiclesCBItemStateChanged(evt);
+            }
+        });
 
         vehiclesText.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
 
@@ -793,13 +846,6 @@ public class ClientGUI extends javax.swing.JFrame {
         jLabel19.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         jLabel19.setText("Category:");
 
-        vehiclesCategoryText.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        vehiclesCategoryText.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                vehiclesCategoryTextActionPerformed(evt);
-            }
-        });
-
         jLabel20.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         jLabel20.setText("Rental Status:");
 
@@ -808,6 +854,9 @@ public class ClientGUI extends javax.swing.JFrame {
 
         vehiclesClearBtn.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         vehiclesClearBtn.setText("Clear");
+
+        vehiclesCategoryCB.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        vehiclesCategoryCB.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Sedan (R450)", "SUV (R500)" }));
 
         javax.swing.GroupLayout vehiclePanelLayout = new javax.swing.GroupLayout(vehiclePanel);
         vehiclePanel.setLayout(vehiclePanelLayout);
@@ -829,16 +878,19 @@ public class ClientGUI extends javax.swing.JFrame {
                             .addComponent(vehiclesText)
                             .addGroup(vehiclePanelLayout.createSequentialGroup()
                                 .addGroup(vehiclePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(vehiclesCategoryText, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jLabel19))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                    .addGroup(vehiclePanelLayout.createSequentialGroup()
+                                        .addComponent(jLabel19)
+                                        .addGap(203, 203, 203))
+                                    .addGroup(vehiclePanelLayout.createSequentialGroup()
+                                        .addComponent(vehiclesCategoryCB, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)))
                                 .addGroup(vehiclePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(jLabel20)
-                                    .addComponent(vehiclesRentalStatusCB, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))))
+                                    .addComponent(vehiclesRentalStatusCB, 0, 190, Short.MAX_VALUE)))))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, vehiclePanelLayout.createSequentialGroup()
                         .addComponent(vehiclesEditBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 412, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(vehiclesClearBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(vehiclesClearBtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         vehiclePanelLayout.setVerticalGroup(
@@ -860,8 +912,8 @@ public class ClientGUI extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(vehiclePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(vehiclesMakeText, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(vehiclesCategoryText, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(vehiclesRentalStatusCB, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(vehiclesRentalStatusCB, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(vehiclesCategoryCB, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(vehiclePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(vehiclesClearBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -869,7 +921,7 @@ public class ClientGUI extends javax.swing.JFrame {
                 .addGap(18, 18, 18))
         );
 
-        SelectionPanel.addTab("Vehicles  ", new javax.swing.ImageIcon(getClass().getResource("/Vehicles.png")), vehiclePanel); // NOI18N
+        SelectionPanel.addTab("Vehicles  ", null, vehiclePanel);
 
         jLabel12.setText("Rental Status:");
 
@@ -881,6 +933,7 @@ public class ClientGUI extends javax.swing.JFrame {
             }
         });
 
+        reportsTable.setAutoCreateRowSorter(true);
         reportsTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
@@ -904,7 +957,9 @@ public class ClientGUI extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
+        reportsTable.setColumnSelectionAllowed(true);
         jScrollPane4.setViewportView(reportsTable);
+        reportsTable.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
 
         jButton8.setText("Custom Date");
 
@@ -915,7 +970,7 @@ public class ClientGUI extends javax.swing.JFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, reportsPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(reportsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 618, Short.MAX_VALUE)
+                    .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 702, Short.MAX_VALUE)
                     .addGroup(reportsPanelLayout.createSequentialGroup()
                         .addComponent(jLabel12)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -937,7 +992,7 @@ public class ClientGUI extends javax.swing.JFrame {
                 .addContainerGap())
         );
 
-        SelectionPanel.addTab("Reports  ", new javax.swing.ImageIcon(getClass().getResource("/reports.png")), reportsPanel); // NOI18N
+        SelectionPanel.addTab("Reports  ", null, reportsPanel);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -967,10 +1022,6 @@ public class ClientGUI extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_vehiclesMakeTextActionPerformed
 
-    private void vehiclesCategoryTextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_vehiclesCategoryTextActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_vehiclesCategoryTextActionPerformed
-
     private void addCustomerBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addCustomerBtnActionPerformed
     String fName = customerNameText.getText();
     String lName = customerLastNameText.getText();
@@ -998,6 +1049,7 @@ public class ClientGUI extends javax.swing.JFrame {
         cmd = "UCINSERT INTO CUSTOMER VALUES(cust_id_seq.NEXTVAL, '" + fName + "', '" + lName + "', '" + rental + "')";
         cl.communicate(cmd);
         System.out.println(cmd);
+        populateLists();
     }
     
     }//GEN-LAST:event_addCustomerBtnActionPerformed
@@ -1010,7 +1062,7 @@ public class ClientGUI extends javax.swing.JFrame {
     
     if (make.equals("")) {
         
-        JOptionPane.showMessageDialog(rentPanel, "Please Fill in the Vehicle Make");
+        JOptionPane.showMessageDialog(rentPanel, "Please Fill in Vehicle Make");
         
     }
     
@@ -1042,6 +1094,7 @@ public class ClientGUI extends javax.swing.JFrame {
         cmd = "UVINSERT INTO VEHICLE VALUES(veh_id_seq.nextVAL, '" + make + "', '" + category + "', '" + price + "', '" + rental+ "')"; 
         cl.communicate("QCSELECT * FROM CUSTOMER");
         System.out.println(cmd);
+        populateLists();
     }
     }//GEN-LAST:event_addVehicleBtnActionPerformed
 
@@ -1118,23 +1171,12 @@ public class ClientGUI extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_yearRentCBItemStateChanged
 
-    private void rentClearBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rentClearBtnActionPerformed
-        yearRentCB.setSelectedIndex(0);
-        monthRentCB.setSelectedIndex(0);
-        dayRentCB.setSelectedIndex(0);
-        
-        customerRentCB.setSelectedIndex(0);
-        categoryRentCB.setSelectedIndex(0);
-        vehicleRentCB.setSelectedIndex(0);
-        vRentInfoText.setText("");
-        cRentInfoText.setText("");
-        
-    }//GEN-LAST:event_rentClearBtnActionPerformed
-
     private void SelectionPanelStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_SelectionPanelStateChanged
     int index = SelectionPanel.getSelectedIndex();
         switch (index) {
             case 1:
+                customerRentCB.removeAllItems();
+                vehicleRentCB.removeAllItems();
                 for (int i = 0; i<c.size();i++) {
                     if (c.get(i).getCanRent()) {
                         customerRentCB.addItem(c.get(i).getCustNumber()+"");
@@ -1153,39 +1195,60 @@ public class ClientGUI extends javax.swing.JFrame {
                         vehicleRentCB.addItem(v.get(i).getVehNumber()+"");
                     }
                 }
-            break;
+                Calendar current = Calendar.getInstance();
+                yearRentCB.setSelectedItem(current.get(Calendar.YEAR));
+                monthRentCB.setSelectedIndex(current.get(Calendar.MONTH));
+                dayRentCB.setSelectedIndex(current.get(Calendar.DAY_OF_MONTH));
+                
+                break;
             
             case 2:
+                returnCB.removeAllItems();
                 for (int i = 0; i<r.size();i++) {
                     
                     if (r.get(i).getDateReturned().equals("NA")) {
                         returnCB.addItem(r.get(i).getRentalNumber()+"");
                     }
                 }
-            break;
+                
+                current = Calendar.getInstance();
+                yearReturnCB.setSelectedItem(current.get(Calendar.YEAR));
+                monthReturnCB.setSelectedIndex(current.get(Calendar.MONTH));
+                dayReturnCB.setSelectedIndex(current.get(Calendar.DAY_OF_MONTH));
+                break;
             
             case 3:
+                customersCB.removeAllItems();
                 DefaultTableModel cModel = (DefaultTableModel) customersTable.getModel();
+                cModel.setRowCount(0);
                 
                 for (int i = 0; i<c.size();i++) {
+                    customersCB.addItem(c.get(i).getCustNumber()+"");
+                    
                     Object[] row = { c.get(i).getCustNumber(), c.get(i).getFirstName(), c.get(i).getSurName(), c.get(i).getCanRent() };
-
+                    
                     cModel.addRow(row);
                 }
-            break;
+                break;
             
             case 4:
+                vehiclesCB.removeAllItems();
                 DefaultTableModel vModel = (DefaultTableModel) vehiclesTable.getModel();
+                vModel.setRowCount(0);
                 
                 for (int i = 0; i<v.size();i++) {
+                    vehiclesCB.addItem(v.get(i).getVehNumber()+"");
+                    
                     Object[] row = { v.get(i).getVehNumber(), v.get(i).getMake(), v.get(i).getCategory(), v.get(i).isAvailableForRent()};
 
                     vModel.addRow(row);
                 }
-            break;
+                
+                break;
             
             case 5:
                 DefaultTableModel rModel = (DefaultTableModel) reportsTable.getModel();
+                rModel.setRowCount(0);
                 
                 if (reportsChk.isSelected()) {
                     for (int i = 0; i<r.size();i++) {
@@ -1204,15 +1267,17 @@ public class ClientGUI extends javax.swing.JFrame {
                         }
                     } 
                 }
-            break;
+                break;
         }
     }//GEN-LAST:event_SelectionPanelStateChanged
 
     private void customerRentCBItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_customerRentCBItemStateChanged
-        for (int i = 0; i<c.size();i++) {
-            if (c.get(i).getCustNumber() == Integer.parseInt((String)customerRentCB.getSelectedItem())) {
-                String output = c.get(i).getFirstName() + " " + c.get(i).getSurName();
-                cRentInfoText.setText(output);
+        if (customerRentCB.getSelectedItem() != null) {
+            for (int i = 0; i<c.size();i++) {
+                if (c.get(i).getCustNumber() == Integer.parseInt((String)customerRentCB.getSelectedItem())) {
+                    String output = c.get(i).getFirstName() + " " + c.get(i).getSurName();
+                    cRentInfoText.setText(output);
+                }
             }
         }
     }//GEN-LAST:event_customerRentCBItemStateChanged
@@ -1293,26 +1358,45 @@ public class ClientGUI extends javax.swing.JFrame {
         int rentalN = Integer.parseInt((String)returnCB.getSelectedItem());
         int customerN = 0;
         int vehicleN = 0;
-        Calendar current = Calendar.getInstance();
-        String currentDate = current.get(Calendar.YEAR) + "/" + current.get(Calendar.MONTH) + "/" + current.get(Calendar.DAY_OF_MONTH);
+        String returnMonth ="";
+        String returnDay = "";
+        
+        int day = dayReturnCB.getSelectedIndex()+1;
+        if (day < 10) {
+            returnDay = "0"+day;
+        }
+        else {
+            returnDay = day+"";
+        }
+        
+        int month = monthReturnCB.getSelectedIndex()+1;
+        if (month < 10) {
+            returnMonth = "0" + month;
+        }
+        else {
+            returnMonth = month+"";
+        }
+        
+        String returnDate = yearReturnCB.getSelectedItem() + "/" + returnMonth + "/" + returnDay; 
+        
         String rentalDate;
         String total="";
         
         for (int i=0; i<r.size();i++) {
             if (rentalN == r.get(i).getRentalNumber()) {
-                r.get(i).setDateReturned(currentDate);
+                r.get(i).setDateReturned(returnDate);
                 rentalDate = r.get(i).getDateRented();
                 customerN = r.get(i).getCustNumber();
                 vehicleN = r.get(i).getVehNumber();
                 total = String.format("%.2f", r.get(i).getTotalRental());
                 String ppd = String.format("%.2f", r.get(i).getPricePerDay());
-                returnTextArea.append(border + "\n\nRental Date: " + rentalDate + "\nReturnDate: " + currentDate + "\nPrice Per Day: R" + ppd + "\nDays Rented: " + r.get(i).calcNumberOfDays() + "\n\nTotal Charge: R" + total);
+                returnTextArea.append(border + "\n\nRental Date: " + rentalDate + "\nReturnDate: " + returnDate + "\nPrice Per Day: R" + ppd + "\nDays Rented: " + r.get(i).calcNumberOfDays() + "\n\nTotal Charge: R" + total);
             }
         }
         
-        currentDate = currentDate.replace("/", "-");
+        returnDate = returnDate.replace("/", "-");
         
-        cmd = "URUPDATE RENTAL SET dateReturned= TO_DATE('" + currentDate + "', 'yyyy-mm-dd')" +" WHERE rentalNumber='" + rentalN +
+        cmd = "URUPDATE RENTAL SET dateReturned= TO_DATE('" + returnDate + "', 'yyyy-mm-dd')" +" WHERE rentalNumber='" + rentalN +
                             "'#UPDATE CUSTOMER SET canRent = '1' WHERE custNumber = '"+ customerN +"'#UPDATE VEHICLE SET availableForRent = '1' " +
                             "WHERE vehNumber = '"+vehicleN+"'";
         System.out.println(cmd);
@@ -1350,6 +1434,78 @@ public class ClientGUI extends javax.swing.JFrame {
                     } 
                 }
     }//GEN-LAST:event_reportsChkItemStateChanged
+
+    private void dayReturnCBItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_dayReturnCBItemStateChanged
+        // TODO add your handling code here:
+    }//GEN-LAST:event_dayReturnCBItemStateChanged
+
+    private void dayReturnCBActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_dayReturnCBActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_dayReturnCBActionPerformed
+
+    private void monthReturnCBItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_monthReturnCBItemStateChanged
+        // TODO add your handling code here:
+    }//GEN-LAST:event_monthReturnCBItemStateChanged
+
+    private void yearReturnCBItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_yearReturnCBItemStateChanged
+        // TODO add your handling code here:
+    }//GEN-LAST:event_yearReturnCBItemStateChanged
+
+    private void customersCBItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_customersCBItemStateChanged
+        if (customersCB.getSelectedItem() != null) {
+            for (int i=0; i<c.size();i++) {
+                if (c.get(i).getCustNumber() == Integer.parseInt((String)customersCB.getSelectedItem())) {
+                    customersText.setText(c.get(i).getFirstName() + " " + c.get(i).getSurName());
+                }
+            }
+        }    
+    }//GEN-LAST:event_customersCBItemStateChanged
+
+    private void customersEditBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_customersEditBtnActionPerformed
+        String fName = customersFnameText.getText();
+        String lName = customersLNameText.getText();
+        if (fName.equals("") || lName.equals("")) {
+            JOptionPane.showMessageDialog(null, "Please Fill in both Customer First Name and Last Name.");
+        }
+        else {
+            cmd = "UCUPDATE CUSTOMER SET firstName='" + customersFnameText.getText() + "' , surname='" + customersLNameText.getText()+"' WHERE custNumber='" + customersCB.getSelectedItem()+"'";
+            cl.communicate(cmd);
+            populateLists();
+            
+        }
+    }//GEN-LAST:event_customersEditBtnActionPerformed
+
+    private void vehiclesEditBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_vehiclesEditBtnActionPerformed
+        String make = vehiclesMakeText.getText();
+        int cat = vehiclesCategoryCB.getSelectedIndex();
+        String category = "Sedan";
+        int price = 0;
+        if (cat == 0) {
+            price = 450;
+        }
+        else {
+            price = 500;
+            category = "SUV";
+        }
+        if (make.equals("")) {
+            JOptionPane.showMessageDialog(null, "Please Fill in Vehicle Make");
+        }
+        else {
+            cmd = "UVUPDATE VEHICLE SET make='" + make +"', category='" + category + "', rentalPrice=" + price + " WHERE vehNumber='" + vehiclesCB.getSelectedItem()+"'";
+            cl.communicate(cmd);
+            populateLists();
+        }
+    }//GEN-LAST:event_vehiclesEditBtnActionPerformed
+
+    private void vehiclesCBItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_vehiclesCBItemStateChanged
+        if (vehiclesCB.getSelectedItem() != null) {
+            for (int i=0; i<v.size();i++) {
+                if (v.get(i).getVehNumber() == Integer.parseInt((String)vehiclesCB.getSelectedItem())) {
+                    vehiclesText.setText(v.get(i).getMake() + " " + v.get(i).getCategory());
+                }
+            }
+        } 
+    }//GEN-LAST:event_vehiclesCBItemStateChanged
 
     /**
      * @param args the command line arguments
@@ -1421,8 +1577,8 @@ public class ClientGUI extends javax.swing.JFrame {
     private javax.swing.JTable customersTable;
     private javax.swing.JTextField customersText;
     private javax.swing.JComboBox<String> dayRentCB;
+    private javax.swing.JComboBox<String> dayReturnCB;
     private javax.swing.JRadioButton denyRBtn;
-    private javax.swing.JSpinner hRentSpn;
     private javax.swing.JButton jButton8;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
@@ -1437,6 +1593,7 @@ public class ClientGUI extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel19;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel20;
+    private javax.swing.JLabel jLabel21;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
@@ -1452,10 +1609,9 @@ public class ClientGUI extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JScrollPane jScrollPane5;
-    private javax.swing.JSpinner mRentSpn;
     private javax.swing.JComboBox<String> monthRentCB;
+    private javax.swing.JComboBox<String> monthReturnCB;
     private javax.swing.JButton rentBtn;
-    private javax.swing.JButton rentClearBtn;
     private javax.swing.JPanel rentPanel;
     private javax.swing.JCheckBox reportsChk;
     private javax.swing.JPanel reportsPanel;
@@ -1471,7 +1627,7 @@ public class ClientGUI extends javax.swing.JFrame {
     private javax.swing.JPanel vehiclePanel;
     private javax.swing.JComboBox<String> vehicleRentCB;
     private javax.swing.JComboBox<String> vehiclesCB;
-    private javax.swing.JTextField vehiclesCategoryText;
+    private javax.swing.JComboBox<String> vehiclesCategoryCB;
     private javax.swing.JButton vehiclesClearBtn;
     private javax.swing.JButton vehiclesEditBtn;
     private javax.swing.JTextField vehiclesMakeText;
@@ -1479,5 +1635,6 @@ public class ClientGUI extends javax.swing.JFrame {
     private javax.swing.JTable vehiclesTable;
     private javax.swing.JTextField vehiclesText;
     private javax.swing.JComboBox<String> yearRentCB;
+    private javax.swing.JComboBox<String> yearReturnCB;
     // End of variables declaration//GEN-END:variables
 }
